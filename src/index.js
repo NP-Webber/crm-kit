@@ -53,5 +53,18 @@ export { ImportSection } from './import/index.js';
 // ── Audio — שמע ──
 export { AudioPlayer, AudioRecorder } from './audio/index.js';
 
+// ── Tasks — ניהול משימות ──
+export {
+  TasksDashboard,
+  TaskCreateDialog,
+  TaskNotifications,
+  getPriorityColor,
+  getPriorityText,
+  getTaskTypeText,
+  getQuickDate,
+  categorizeTasksByDate,
+  getTaskStats,
+} from './tasks/index.js';
+
 // ── Utils — כלי עזר ──
 export { toHebrewNumeral } from './utils/index.js';

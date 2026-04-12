@@ -147,6 +147,30 @@ Object.defineProperty(exports, "TableRow", {
     return _index.TableRow;
   }
 });
+Object.defineProperty(exports, "TaskCreateDialog", {
+  enumerable: true,
+  get: function get() {
+    return _index9.TaskCreateDialog;
+  }
+});
+Object.defineProperty(exports, "TaskNotifications", {
+  enumerable: true,
+  get: function get() {
+    return _index9.TaskNotifications;
+  }
+});
+Object.defineProperty(exports, "TasksDashboard", {
+  enumerable: true,
+  get: function get() {
+    return _index9.TasksDashboard;
+  }
+});
+Object.defineProperty(exports, "categorizeTasksByDate", {
+  enumerable: true,
+  get: function get() {
+    return _index9.categorizeTasksByDate;
+  }
+});
 Object.defineProperty(exports, "createApiClient", {
   enumerable: true,
   get: function get() {
@@ -165,10 +189,40 @@ Object.defineProperty(exports, "defaultCrmTheme", {
     return _index3.defaultCrmTheme;
   }
 });
+Object.defineProperty(exports, "getPriorityColor", {
+  enumerable: true,
+  get: function get() {
+    return _index9.getPriorityColor;
+  }
+});
+Object.defineProperty(exports, "getPriorityText", {
+  enumerable: true,
+  get: function get() {
+    return _index9.getPriorityText;
+  }
+});
+Object.defineProperty(exports, "getQuickDate", {
+  enumerable: true,
+  get: function get() {
+    return _index9.getQuickDate;
+  }
+});
+Object.defineProperty(exports, "getTaskStats", {
+  enumerable: true,
+  get: function get() {
+    return _index9.getTaskStats;
+  }
+});
+Object.defineProperty(exports, "getTaskTypeText", {
+  enumerable: true,
+  get: function get() {
+    return _index9.getTaskTypeText;
+  }
+});
 Object.defineProperty(exports, "toHebrewNumeral", {
   enumerable: true,
   get: function get() {
-    return _index9.toHebrewNumeral;
+    return _index0.toHebrewNumeral;
   }
 });
 Object.defineProperty(exports, "useAuth", {
@@ -185,5 +239,6 @@ var _index5 = require("./auth/index.js");
 var _index6 = require("./api/index.js");
 var _index7 = require("./import/index.js");
 var _index8 = require("./audio/index.js");
-var _index9 = require("./utils/index.js");
+var _index9 = require("./tasks/index.js");
+var _index0 = require("./utils/index.js");
 //# sourceMappingURL=index.js.map
