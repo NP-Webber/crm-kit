@@ -62,6 +62,8 @@ const parseWidth = (w) => {
  * @param {Function} props.onExportFetch - שליפת כל הנתונים ליצוא (server-side)
  * @param {boolean} props.urlSync - סנכרון state עם URL params (ברירת מחדל: true)
  * @param {Function} props.onStateChange - callback({ page, pageSize, sort, order, filters }) — חלופה ל-URL sync
+ * @param {boolean} props.showSearch - הצגת תיבת חיפוש גלובלית (ברירת מחדל: true)
+ * @param {string} props.searchPlaceholder - placeholder לתיבת חיפוש
  */
 const TableKit = ({
   columns = [],
@@ -73,6 +75,8 @@ const TableKit = ({
   showColumnPicker = true,
   showExport = true,
   showFilters = true,
+  showSearch = true,
+  searchPlaceholder = 'חיפוש...',
   exportFileName = 'export',
   onRowDoubleClick,
   renderDrawerDetail,
@@ -119,6 +123,7 @@ const TableKit = ({
     return f;
   });
 
+  const [globalSearch, setGlobalSearch] = useState(() => getParam('q', ''));
   const [valueFilters, setValueFilters] = useState({});
   const [pinnedFilters, setPinnedFilters] = useState({});
   const [conditionFilters, setConditionFilters] = useState({});
@@ -181,6 +186,19 @@ const TableKit = ({
     if (!clientSideMode) return null;
     let result = [...data];
 
+    // Global search — כל מילה יכולה להתאים בעמודה אחרת
+    if (globalSearch.trim()) {
+      const words = globalSearch.trim().toLowerCase().split(/\s+/);
+      result = result.filter((row) =>
+        words.every((word) =>
+          columns.some((col) => {
+            const val = String(row[col.key] ?? '').toLowerCase();
+            return val.includes(word);
+          })
+        )
+      );
+    }
+
     const allFilterKeys = new Set([
       ...Object.keys(filters),
       ...Object.keys(pinnedFilters),
@@ -217,7 +235,7 @@ const TableKit = ({
     }
 
     return result;
-  }, [clientSideMode, data, filters, pinnedFilters, valueFilters, conditionFilters, sortKey, sortOrder]);
+  }, [clientSideMode, data, globalSearch, columns, filters, pinnedFilters, valueFilters, conditionFilters, sortKey, sortOrder]);
 
   const filteredData = useMemo(() => {
     if (clientSideMode) return processedData || [];
@@ -274,8 +292,8 @@ const TableKit = ({
         activeFilters[k] = text;
       }
     });
-    onFetch({ page, pageSize, sort: sortKey, order: sortOrder, filters: activeFilters, valueFilters, conditionFilters });
-  }, [clientSideMode, onFetch, page, pageSize, sortKey, sortOrder, filters, valueFilters, pinnedFilters, conditionFilters]);
+    onFetch({ page, pageSize, sort: sortKey, order: sortOrder, filters: activeFilters, valueFilters, conditionFilters, search: globalSearch || undefined });
+  }, [clientSideMode, onFetch, page, pageSize, sortKey, sortOrder, filters, valueFilters, pinnedFilters, conditionFilters, globalSearch]);
 
   useEffect(() => {
     doFetch();
@@ -363,11 +381,19 @@ const TableKit = ({
     setPage(1);
   };
 
+  const handleGlobalSearchChange = (e) => {
+    const val = e.target.value;
+    setGlobalSearch(val);
+    setPage(1);
+    updateUrl({ q: val, page: 1 });
+  };
+
   const hasActiveFilters =
     Object.values(filters).some(Boolean) ||
     Object.keys(valueFilters).length > 0 ||
     Object.keys(pinnedFilters).length > 0 ||
-    Object.keys(conditionFilters).length > 0;
+    Object.keys(conditionFilters).length > 0 ||
+    globalSearch.trim() !== '';
 
   const clearAllFilters = useCallback(() => {
     const emptyFilters = {};
@@ -376,6 +402,7 @@ const TableKit = ({
     setValueFilters({});
     setPinnedFilters({});
     setConditionFilters({});
+    setGlobalSearch('');
     setPage(1);
     const urlState = { page: 1 };
     columns.forEach((col) => { if (col.filterable !== false) urlState[`f_${col.key}`] = ''; });
@@ -453,6 +480,28 @@ const TableKit = ({
     <div className="tablekit-wrapper">
       {/* Toolbar */}
       <div className="tablekit-toolbar">
+        {showSearch && (
+          <div className="tablekit-search-box">
+            <span className="tablekit-search-icon">&#128269;</span>
+            <input
+              type="text"
+              className="tablekit-search-input"
+              placeholder={searchPlaceholder}
+              value={globalSearch}
+              onChange={handleGlobalSearchChange}
+            />
+            {globalSearch && (
+              <button
+                type="button"
+                className="tablekit-search-clear"
+                onClick={() => { setGlobalSearch(''); setPage(1); updateUrl({ q: '', page: 1 }); }}
+                title="נקה חיפוש"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        )}
         <div className="tablekit-toolbar-right">
           {showColumnPicker && (
             <ColumnPicker

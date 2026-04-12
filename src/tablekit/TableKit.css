@@ -28,6 +28,63 @@
   flex-wrap: wrap;
 }
 
+/* Global Search */
+.tablekit-search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #c5cae9;
+  border-radius: 8px;
+  padding: 6px 12px;
+  min-width: 220px;
+  max-width: 360px;
+  flex: 1;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tablekit-search-box:focus-within {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.12);
+}
+
+.tablekit-search-icon {
+  font-size: 16px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.tablekit-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  direction: rtl;
+  width: 100%;
+  padding: 2px 0;
+}
+
+.tablekit-search-input::placeholder {
+  color: #9ea7b8;
+}
+
+.tablekit-search-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.tablekit-search-clear:hover {
+  color: #d32f2f;
+}
+
 /* מיכל טבלה */
 .tablekit-container {
   width: 100%;
