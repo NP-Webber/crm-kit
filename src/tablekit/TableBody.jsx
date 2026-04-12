@@ -1,6 +1,6 @@
 import React from 'react';
-import TableRow from './TableRow.jsx';
-import TableCell from './TableCell.jsx';
+import TableRow from './TableRow.js';
+import TableCell from './TableCell.js';
 
 const TableBody = ({ data, columns, loading, emptyMessage = 'אין נתונים להצגה', onRowDoubleClick }) => {
   if (loading) {

@@ -5,12 +5,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var _react = _interopRequireWildcard(require("react"));
-var _TableHeader = _interopRequireDefault(require("./TableHeader.jsx"));
-var _TableBody = _interopRequireDefault(require("./TableBody.jsx"));
-var _Pagination = _interopRequireDefault(require("./Pagination.jsx"));
-var _ColumnPicker = _interopRequireDefault(require("./ColumnPicker.jsx"));
-var _ColumnFilter = _interopRequireDefault(require("./ColumnFilter.jsx"));
-var _RowDrawer = _interopRequireDefault(require("./RowDrawer.jsx"));
+var _TableHeader = _interopRequireDefault(require("./TableHeader.js"));
+var _TableBody = _interopRequireDefault(require("./TableBody.js"));
+var _Pagination = _interopRequireDefault(require("./Pagination.js"));
+var _ColumnPicker = _interopRequireDefault(require("./ColumnPicker.js"));
+var _ColumnFilter = _interopRequireDefault(require("./ColumnFilter.js"));
+var _RowDrawer = _interopRequireDefault(require("./RowDrawer.js"));
 require("./TableKit.css");
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }

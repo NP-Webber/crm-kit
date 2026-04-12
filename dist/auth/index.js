@@ -21,6 +21,6 @@ Object.defineProperty(exports, "useAuth", {
     return _AuthContext.useAuth;
   }
 });
-var _AuthContext = require("./AuthContext.jsx");
-var _ProtectedRoute = _interopRequireDefault(require("./ProtectedRoute.jsx"));
+var _AuthContext = require("./AuthContext.js");
+var _ProtectedRoute = _interopRequireDefault(require("./ProtectedRoute.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }

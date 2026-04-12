@@ -1,2 +1,2 @@
-export { default as AudioPlayer } from './AudioPlayer.jsx';
-export { default as AudioRecorder } from './AudioRecorder.jsx';
+export { default as AudioPlayer } from './AudioPlayer.js';
+export { default as AudioRecorder } from './AudioRecorder.js';

@@ -64,14 +64,14 @@ Object.defineProperty(exports, "TableRow", {
     return _TableRow["default"];
   }
 });
-var _TableKit = _interopRequireDefault(require("./TableKit.jsx"));
-var _TableHeader = _interopRequireDefault(require("./TableHeader.jsx"));
-var _TableBody = _interopRequireDefault(require("./TableBody.jsx"));
-var _TableRow = _interopRequireDefault(require("./TableRow.jsx"));
-var _TableCell = _interopRequireDefault(require("./TableCell.jsx"));
-var _Pagination = _interopRequireDefault(require("./Pagination.jsx"));
-var _ColumnPicker = _interopRequireDefault(require("./ColumnPicker.jsx"));
-var _ColumnFilter = _interopRequireWildcard(require("./ColumnFilter.jsx"));
-var _RowDrawer = _interopRequireDefault(require("./RowDrawer.jsx"));
+var _TableKit = _interopRequireDefault(require("./TableKit.js"));
+var _TableHeader = _interopRequireDefault(require("./TableHeader.js"));
+var _TableBody = _interopRequireDefault(require("./TableBody.js"));
+var _TableRow = _interopRequireDefault(require("./TableRow.js"));
+var _TableCell = _interopRequireDefault(require("./TableCell.js"));
+var _Pagination = _interopRequireDefault(require("./Pagination.js"));
+var _ColumnPicker = _interopRequireDefault(require("./ColumnPicker.js"));
+var _ColumnFilter = _interopRequireWildcard(require("./ColumnFilter.js"));
+var _RowDrawer = _interopRequireDefault(require("./RowDrawer.js"));
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, "default": e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }

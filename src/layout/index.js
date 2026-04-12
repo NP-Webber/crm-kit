@@ -1,1 +1,1 @@
-export { default as CrmLayout } from './CrmLayout.jsx';
+export { default as CrmLayout } from './CrmLayout.js';

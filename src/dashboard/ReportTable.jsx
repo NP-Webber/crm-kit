@@ -1,6 +1,6 @@
 import React from 'react';
 import { Paper, Typography, Box } from '@mui/material';
-import TableKit from '../tablekit/TableKit.jsx';
+import TableKit from '../tablekit/TableKit.js';
 
 /**
  * ReportTable — טבלאת דוח client-side מבוססת TableKit

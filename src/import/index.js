@@ -1,1 +1,1 @@
-export { default as ImportSection } from './ImportSection.jsx';
+export { default as ImportSection } from './ImportSection.js';

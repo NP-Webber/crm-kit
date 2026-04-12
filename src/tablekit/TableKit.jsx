@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import TableHeader from './TableHeader.jsx';
-import TableBody from './TableBody.jsx';
-import Pagination from './Pagination.jsx';
-import ColumnPicker from './ColumnPicker.jsx';
-import ColumnFilter from './ColumnFilter.jsx';
-import RowDrawer from './RowDrawer.jsx';
+import TableHeader from './TableHeader.js';
+import TableBody from './TableBody.js';
+import Pagination from './Pagination.js';
+import ColumnPicker from './ColumnPicker.js';
+import ColumnFilter from './ColumnFilter.js';
+import RowDrawer from './RowDrawer.js';
 import './TableKit.css';
 
 /** הערכת תנאי סינון על ערך תא */

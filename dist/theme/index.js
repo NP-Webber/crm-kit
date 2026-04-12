@@ -22,5 +22,5 @@ Object.defineProperty(exports, "defaultCrmTheme", {
   }
 });
 var _createCrmTheme = require("./createCrmTheme.js");
-var _CrmThemeProvider = _interopRequireDefault(require("./CrmThemeProvider.jsx"));
+var _CrmThemeProvider = _interopRequireDefault(require("./CrmThemeProvider.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }

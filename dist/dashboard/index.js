@@ -21,7 +21,7 @@ Object.defineProperty(exports, "StatCard", {
     return _StatCard["default"];
   }
 });
-var _StatCard = _interopRequireDefault(require("./StatCard.jsx"));
-var _DashboardGrid = _interopRequireDefault(require("./DashboardGrid.jsx"));
-var _ReportTable = _interopRequireDefault(require("./ReportTable.jsx"));
+var _StatCard = _interopRequireDefault(require("./StatCard.js"));
+var _DashboardGrid = _interopRequireDefault(require("./DashboardGrid.js"));
+var _ReportTable = _interopRequireDefault(require("./ReportTable.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }

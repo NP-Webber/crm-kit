@@ -9,5 +9,5 @@ Object.defineProperty(exports, "CrmLayout", {
     return _CrmLayout["default"];
   }
 });
-var _CrmLayout = _interopRequireDefault(require("./CrmLayout.jsx"));
+var _CrmLayout = _interopRequireDefault(require("./CrmLayout.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }

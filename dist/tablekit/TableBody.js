@@ -5,8 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 var _react = _interopRequireDefault(require("react"));
-var _TableRow = _interopRequireDefault(require("./TableRow.jsx"));
-var _TableCell = _interopRequireDefault(require("./TableCell.jsx"));
+var _TableRow = _interopRequireDefault(require("./TableRow.js"));
+var _TableCell = _interopRequireDefault(require("./TableCell.js"));
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 var TableBody = function TableBody(_ref) {

@@ -9,5 +9,5 @@ Object.defineProperty(exports, "ImportSection", {
     return _ImportSection["default"];
   }
 });
-var _ImportSection = _interopRequireDefault(require("./ImportSection.jsx"));
+var _ImportSection = _interopRequireDefault(require("./ImportSection.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
