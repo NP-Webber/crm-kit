@@ -1,0 +1,26 @@
+/* ========================================
+   CRM Kit — Global Styles
+   RTL + Hebrew fonts
+   ======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  margin: 0;
+  font-family: 'Assistant', 'Rubik', 'Arial', sans-serif;
+  background: #f0f4f8;
+  color: #1a2533;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
