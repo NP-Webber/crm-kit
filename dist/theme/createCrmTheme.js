@@ -101,3 +101,4 @@ function createCrmTheme() {
 
 /** ערכת נושא ברירת מחדל — מוכנה לשימוש מידי */
 var defaultCrmTheme = exports.defaultCrmTheme = createCrmTheme();
+//# sourceMappingURL=createCrmTheme.js.map

@@ -10,3 +10,4 @@ Object.defineProperty(exports, "toHebrewNumeral", {
   }
 });
 var _hebrewNumerals = require("./hebrewNumerals.js");
+//# sourceMappingURL=index.js.map

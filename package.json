@@ -10,7 +10,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "babel src --out-dir dist --copy-files",
+    "build": "babel src --out-dir dist --copy-files --source-maps",
     "prepare": "npm run build"
   },
   "peerDependencies": {

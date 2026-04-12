@@ -303,3 +303,4 @@ var AudioRecorder = function AudioRecorder(_ref) {
   });
 };
 var _default = exports["default"] = AudioRecorder;
+//# sourceMappingURL=AudioRecorder.js.map

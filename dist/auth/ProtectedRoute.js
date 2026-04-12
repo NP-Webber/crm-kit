@@ -50,3 +50,4 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default":
   return children;
 };
 var _default = exports["default"] = ProtectedRoute;
+//# sourceMappingURL=ProtectedRoute.js.map

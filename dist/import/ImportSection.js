@@ -499,3 +499,4 @@ var ImportSection = function ImportSection(_ref) {
   });
 };
 var _default = exports["default"] = ImportSection;
+//# sourceMappingURL=ImportSection.js.map

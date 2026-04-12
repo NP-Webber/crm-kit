@@ -88,3 +88,4 @@ var Pagination = function Pagination(_ref) {
   });
 };
 var _default = exports["default"] = Pagination;
+//# sourceMappingURL=Pagination.js.map

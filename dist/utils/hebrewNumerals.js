@@ -26,3 +26,4 @@ function toHebrewNumeral(n) {
   if (str.length === 1) return str + "\u05F3";
   return str.slice(0, -1) + "\u05F4" + str.slice(-1);
 }
+//# sourceMappingURL=hebrewNumerals.js.map

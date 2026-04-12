@@ -34,3 +34,4 @@ var TableCell = function TableCell(_ref) {
   }));
 };
 var _default = exports["default"] = TableCell;
+//# sourceMappingURL=TableCell.js.map

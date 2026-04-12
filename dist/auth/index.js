@@ -24,3 +24,4 @@ Object.defineProperty(exports, "useAuth", {
 var _AuthContext = require("./AuthContext.js");
 var _ProtectedRoute = _interopRequireDefault(require("./ProtectedRoute.js"));
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+//# sourceMappingURL=index.js.map

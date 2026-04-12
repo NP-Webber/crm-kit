@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","names":["_createApiClient","require"],"sources":["../../src/api/index.js"],"sourcesContent":["export { createApiClient } from './createApiClient.js';\r\n"],"mappings":";;;;;;;;;;;AAAA,IAAAA,gBAAA,GAAAC,OAAA","ignoreList":[]}
