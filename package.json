@@ -1,23 +1,41 @@
 {
   "name": "crm-kit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "ספריית בסיס למערכות CRM — טבלאות, סרגל צד, עיצוב, דשבורדים",
-  "main": "src/index.js",
-  "module": "src/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "license": "UNLICENSED",
   "files": [
-    "src/",
+    "dist/",
     "README.md"
   ],
+  "scripts": {
+    "build": "babel src --out-dir dist --copy-files",
+    "prepare": "npm run build"
+  },
   "peerDependencies": {
-    "react": ">=17.0.0",
-    "react-dom": ">=17.0.0",
-    "react-router-dom": ">=6.0.0",
-    "@mui/material": ">=5.0.0",
-    "@mui/icons-material": ">=5.0.0",
     "@emotion/react": ">=11.0.0",
     "@emotion/styled": ">=11.0.0",
-    "axios": ">=1.0.0"
+    "@mui/icons-material": ">=5.0.0",
+    "@mui/material": ">=5.0.0",
+    "axios": ">=1.0.0",
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0",
+    "react-router-dom": ">=6.0.0"
   },
-  "keywords": ["crm", "react", "tablekit", "rtl", "hebrew", "mui", "dashboard"]
+  "keywords": [
+    "crm",
+    "react",
+    "tablekit",
+    "rtl",
+    "hebrew",
+    "mui",
+    "dashboard"
+  ],
+  "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.2",
+    "@babel/preset-react": "^7.28.5"
+  }
 }
