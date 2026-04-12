@@ -103,6 +103,8 @@ var parseWidth = function parseWidth(w) {
  * @param {Function} props.onExportFetch - שליפת כל הנתונים ליצוא (server-side)
  * @param {boolean} props.urlSync - סנכרון state עם URL params (ברירת מחדל: true)
  * @param {Function} props.onStateChange - callback({ page, pageSize, sort, order, filters }) — חלופה ל-URL sync
+ * @param {boolean} props.showSearch - הצגת תיבת חיפוש גלובלית (ברירת מחדל: true)
+ * @param {string} props.searchPlaceholder - placeholder לתיבת חיפוש
  */
 var TableKit = function TableKit(_ref) {
   var _ref$columns = _ref.columns,
@@ -122,6 +124,10 @@ var TableKit = function TableKit(_ref) {
     showExport = _ref$showExport === void 0 ? true : _ref$showExport,
     _ref$showFilters = _ref.showFilters,
     showFilters = _ref$showFilters === void 0 ? true : _ref$showFilters,
+    _ref$showSearch = _ref.showSearch,
+    showSearch = _ref$showSearch === void 0 ? true : _ref$showSearch,
+    _ref$searchPlaceholde = _ref.searchPlaceholder,
+    searchPlaceholder = _ref$searchPlaceholde === void 0 ? 'חיפוש...' : _ref$searchPlaceholde,
     _ref$exportFileName = _ref.exportFileName,
     exportFileName = _ref$exportFileName === void 0 ? 'export' : _ref$exportFileName,
     onRowDoubleClick = _ref.onRowDoubleClick,
@@ -192,20 +198,26 @@ var TableKit = function TableKit(_ref) {
     _useState0 = _slicedToArray(_useState9, 2),
     filters = _useState0[0],
     setFilters = _useState0[1];
-  var _useState1 = (0, _react.useState)({}),
+  var _useState1 = (0, _react.useState)(function () {
+      return getParam('q', '');
+    }),
     _useState10 = _slicedToArray(_useState1, 2),
-    valueFilters = _useState10[0],
-    setValueFilters = _useState10[1];
+    globalSearch = _useState10[0],
+    setGlobalSearch = _useState10[1];
   var _useState11 = (0, _react.useState)({}),
     _useState12 = _slicedToArray(_useState11, 2),
-    pinnedFilters = _useState12[0],
-    setPinnedFilters = _useState12[1];
+    valueFilters = _useState12[0],
+    setValueFilters = _useState12[1];
   var _useState13 = (0, _react.useState)({}),
     _useState14 = _slicedToArray(_useState13, 2),
-    conditionFilters = _useState14[0],
-    setConditionFilters = _useState14[1];
+    pinnedFilters = _useState14[0],
+    setPinnedFilters = _useState14[1];
+  var _useState15 = (0, _react.useState)({}),
+    _useState16 = _slicedToArray(_useState15, 2),
+    conditionFilters = _useState16[0],
+    setConditionFilters = _useState16[1];
   var colWidthsKey = "".concat(exportFileName || 'tablekit', ":colwidths");
-  var _useState15 = (0, _react.useState)(function () {
+  var _useState17 = (0, _react.useState)(function () {
       try {
         var saved = localStorage.getItem(colWidthsKey);
         return saved ? JSON.parse(saved) : {};
@@ -213,9 +225,9 @@ var TableKit = function TableKit(_ref) {
         return {};
       }
     }),
-    _useState16 = _slicedToArray(_useState15, 2),
-    columnWidths = _useState16[0],
-    setColumnWidths = _useState16[1];
+    _useState18 = _slicedToArray(_useState17, 2),
+    columnWidths = _useState18[0],
+    setColumnWidths = _useState18[1];
   var handleColumnResize = (0, _react.useCallback)(function (key, width) {
     setColumnWidths(function (prev) {
       var next = _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, key, Math.max(40, Math.round(width))));
@@ -247,18 +259,18 @@ var TableKit = function TableKit(_ref) {
     }
   }, [clientSideMode, data.length]);
   var hasCustomWidths = Object.keys(columnWidths).length > 0;
-  var _useState17 = (0, _react.useState)(null),
-    _useState18 = _slicedToArray(_useState17, 2),
-    drawerRow = _useState18[0],
-    setDrawerRow = _useState18[1];
-  var _useState19 = (0, _react.useState)(function () {
+  var _useState19 = (0, _react.useState)(null),
+    _useState20 = _slicedToArray(_useState19, 2),
+    drawerRow = _useState20[0],
+    setDrawerRow = _useState20[1];
+  var _useState21 = (0, _react.useState)(function () {
       return columns.map(function (c) {
         return c.key;
       });
     }),
-    _useState20 = _slicedToArray(_useState19, 2),
-    visibleKeys = _useState20[0],
-    setVisibleKeys = _useState20[1];
+    _useState22 = _slicedToArray(_useState21, 2),
+    visibleKeys = _useState22[0],
+    setVisibleKeys = _useState22[1];
   var columnKeysStr = columns.map(function (c) {
     return c.key;
   }).join(',');
@@ -275,6 +287,20 @@ var TableKit = function TableKit(_ref) {
   var processedData = (0, _react.useMemo)(function () {
     if (!clientSideMode) return null;
     var result = _toConsumableArray(data);
+
+    // Global search — כל מילה יכולה להתאים בעמודה אחרת
+    if (globalSearch.trim()) {
+      var words = globalSearch.trim().toLowerCase().split(/\s+/);
+      result = result.filter(function (row) {
+        return words.every(function (word) {
+          return columns.some(function (col) {
+            var _row$col$key;
+            var val = String((_row$col$key = row[col.key]) !== null && _row$col$key !== void 0 ? _row$col$key : '').toLowerCase();
+            return val.includes(word);
+          });
+        });
+      });
+    }
     var allFilterKeys = new Set([].concat(_toConsumableArray(Object.keys(filters)), _toConsumableArray(Object.keys(pinnedFilters))));
     allFilterKeys.forEach(function (k) {
       var text = filters[k] || '';
@@ -317,7 +343,7 @@ var TableKit = function TableKit(_ref) {
       });
     }
     return result;
-  }, [clientSideMode, data, filters, pinnedFilters, valueFilters, conditionFilters, sortKey, sortOrder]);
+  }, [clientSideMode, data, globalSearch, columns, filters, pinnedFilters, valueFilters, conditionFilters, sortKey, sortOrder]);
   var filteredData = (0, _react.useMemo)(function () {
     if (clientSideMode) return processedData || [];
     if (Object.keys(valueFilters).length === 0) return data;
@@ -378,9 +404,10 @@ var TableKit = function TableKit(_ref) {
       order: sortOrder,
       filters: activeFilters,
       valueFilters: valueFilters,
-      conditionFilters: conditionFilters
+      conditionFilters: conditionFilters,
+      search: globalSearch || undefined
     });
-  }, [clientSideMode, onFetch, page, pageSize, sortKey, sortOrder, filters, valueFilters, pinnedFilters, conditionFilters]);
+  }, [clientSideMode, onFetch, page, pageSize, sortKey, sortOrder, filters, valueFilters, pinnedFilters, conditionFilters, globalSearch]);
   (0, _react.useEffect)(function () {
     doFetch();
   }, [doFetch]);
@@ -482,7 +509,16 @@ var TableKit = function TableKit(_ref) {
     });
     setPage(1);
   };
-  var hasActiveFilters = Object.values(filters).some(Boolean) || Object.keys(valueFilters).length > 0 || Object.keys(pinnedFilters).length > 0 || Object.keys(conditionFilters).length > 0;
+  var handleGlobalSearchChange = function handleGlobalSearchChange(e) {
+    var val = e.target.value;
+    setGlobalSearch(val);
+    setPage(1);
+    updateUrl({
+      q: val,
+      page: 1
+    });
+  };
+  var hasActiveFilters = Object.values(filters).some(Boolean) || Object.keys(valueFilters).length > 0 || Object.keys(pinnedFilters).length > 0 || Object.keys(conditionFilters).length > 0 || globalSearch.trim() !== '';
   var clearAllFilters = (0, _react.useCallback)(function () {
     var emptyFilters = {};
     columns.forEach(function (col) {
@@ -492,6 +528,7 @@ var TableKit = function TableKit(_ref) {
     setValueFilters({});
     setPinnedFilters({});
     setConditionFilters({});
+    setGlobalSearch('');
     setPage(1);
     var urlState = {
       page: 1
@@ -510,10 +547,10 @@ var TableKit = function TableKit(_ref) {
   };
 
   // CSV Export
-  var _useState21 = (0, _react.useState)(false),
-    _useState22 = _slicedToArray(_useState21, 2),
-    exporting = _useState22[0],
-    setExporting = _useState22[1];
+  var _useState23 = (0, _react.useState)(false),
+    _useState24 = _slicedToArray(_useState23, 2),
+    exporting = _useState24[0],
+    setExporting = _useState24[1];
   var handleExport = /*#__PURE__*/function () {
     var _ref10 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
       var exportData, activeFilters, allKeys, header, rows, BOM, csvContent, blob, url, link, _t;
@@ -608,9 +645,34 @@ var TableKit = function TableKit(_ref) {
   }();
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
     className: "tablekit-wrapper",
-    children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
+    children: [/*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
       className: "tablekit-toolbar",
-      children: /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
+      children: [showSearch && /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
+        className: "tablekit-search-box",
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("span", {
+          className: "tablekit-search-icon",
+          children: "\uD83D\uDD0D"
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)("input", {
+          type: "text",
+          className: "tablekit-search-input",
+          placeholder: searchPlaceholder,
+          value: globalSearch,
+          onChange: handleGlobalSearchChange
+        }), globalSearch && /*#__PURE__*/(0, _jsxRuntime.jsx)("button", {
+          type: "button",
+          className: "tablekit-search-clear",
+          onClick: function onClick() {
+            setGlobalSearch('');
+            setPage(1);
+            updateUrl({
+              q: '',
+              page: 1
+            });
+          },
+          title: "\u05E0\u05E7\u05D4 \u05D7\u05D9\u05E4\u05D5\u05E9",
+          children: "\u2715"
+        })]
+      }), /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
         className: "tablekit-toolbar-right",
         children: [showColumnPicker && /*#__PURE__*/(0, _jsxRuntime.jsx)(_ColumnPicker["default"], {
           allColumns: allColumnsForPicker || columns,
@@ -635,7 +697,7 @@ var TableKit = function TableKit(_ref) {
           title: "\u05D0\u05E4\u05E1 \u05E8\u05D5\u05D7\u05D1\u05D9 \u05E2\u05DE\u05D5\u05D3\u05D5\u05EA \u05DC\u05D1\u05E8\u05D9\u05E8\u05EA \u05DE\u05D7\u05D3\u05DC",
           children: "\u21D4 \u05D0\u05E4\u05E1 \u05E8\u05D5\u05D7\u05D1\u05D9\u05DD"
         })]
-      })
+      })]
     }), /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
       className: "tablekit-container",
       children: /*#__PURE__*/(0, _jsxRuntime.jsxs)("table", {

@@ -30,6 +30,10 @@ export {
 export {
   StatCard,
   DashboardGrid,
+  DashboardPanel,
+  DashboardSection,
+  SimpleTable,
+  CollapsibleGroup,
   ReportTable,
 } from './dashboard/index.js';
 

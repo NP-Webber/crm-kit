@@ -21,6 +21,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  * @param {number|string} props.value - ערך מספרי
  * @param {string} props.label - תווית
  * @param {string} props.color - צבע (ברירת מחדל: #1565c0)
+ * @param {boolean} props.loading - מצב טעינה (מציג ספינר במקום ערך)
  * @param {string} props.trend - שינוי (למשל '+12%')
  * @param {string} props.trendColor - צבע trend
  * @param {Function} props.onClick - callback ללחיצה
@@ -31,6 +32,8 @@ var StatCard = function StatCard(_ref) {
     label = _ref.label,
     _ref$color = _ref.color,
     color = _ref$color === void 0 ? '#1565c0' : _ref$color,
+    _ref$loading = _ref.loading,
+    loading = _ref$loading === void 0 ? false : _ref$loading,
     trend = _ref.trend,
     trendColor = _ref.trendColor,
     onClick = _ref.onClick,
@@ -78,7 +81,9 @@ var StatCard = function StatCard(_ref) {
           color: '#1a2533',
           lineHeight: 1.2
         },
-        children: value
+        children: loading ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.CircularProgress, {
+          size: 24
+        }) : value !== null && value !== void 0 ? value : 0
       }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Typography, {
         variant: "body2",
         color: "text.secondary",

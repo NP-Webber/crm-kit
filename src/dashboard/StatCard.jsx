@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Box, Typography } from '@mui/material';
+import { Paper, Box, Typography, CircularProgress } from '@mui/material';
 
 /**
  * StatCard — כרטיס סטטיסטיקה לדשבורד
@@ -9,6 +9,7 @@ import { Paper, Box, Typography } from '@mui/material';
  * @param {number|string} props.value - ערך מספרי
  * @param {string} props.label - תווית
  * @param {string} props.color - צבע (ברירת מחדל: #1565c0)
+ * @param {boolean} props.loading - מצב טעינה (מציג ספינר במקום ערך)
  * @param {string} props.trend - שינוי (למשל '+12%')
  * @param {string} props.trendColor - צבע trend
  * @param {Function} props.onClick - callback ללחיצה
@@ -18,6 +19,7 @@ const StatCard = ({
   value,
   label,
   color = '#1565c0',
+  loading = false,
   trend,
   trendColor,
   onClick,
@@ -66,7 +68,7 @@ const StatCard = ({
           fontWeight={800}
           sx={{ color: '#1a2533', lineHeight: 1.2 }}
         >
-          {value}
+          {loading ? <CircularProgress size={24} /> : (value ?? 0)}
         </Typography>
         <Typography variant="body2" color="text.secondary" fontWeight={500}>
           {label}
