@@ -395,7 +395,7 @@ var TableKit = function TableKit(_ref) {
       if (terms.length === 0) return;
       result = result.filter(function (row) {
         var val = String(row[k] || '').toLowerCase();
-        return terms.some(function (t) {
+        return terms.every(function (t) {
           return val.includes(t.toLowerCase());
         });
       });
@@ -476,9 +476,9 @@ var TableKit = function TableKit(_ref) {
       var text = filters[k] || '';
       var pins = pinnedFilters[k] || [];
       if (pins.length > 0 && text) {
-        activeFilters[k] = [].concat(_toConsumableArray(pins), [text]).join('|');
+        activeFilters[k] = [].concat(_toConsumableArray(pins), [text]).join('&');
       } else if (pins.length > 0) {
-        activeFilters[k] = pins.join('|');
+        activeFilters[k] = pins.join('&');
       } else if (text) {
         activeFilters[k] = text;
       }

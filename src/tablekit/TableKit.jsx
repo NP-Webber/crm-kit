@@ -282,7 +282,7 @@ const TableKit = ({
       if (terms.length === 0) return;
       result = result.filter((row) => {
         const val = String(row[k] || '').toLowerCase();
-        return terms.some((t) => val.includes(t.toLowerCase()));
+        return terms.every((t) => val.includes(t.toLowerCase()));
       });
     });
 
@@ -357,9 +357,9 @@ const TableKit = ({
       const text = filters[k] || '';
       const pins = pinnedFilters[k] || [];
       if (pins.length > 0 && text) {
-        activeFilters[k] = [...pins, text].join('|');
+        activeFilters[k] = [...pins, text].join('&');
       } else if (pins.length > 0) {
-        activeFilters[k] = pins.join('|');
+        activeFilters[k] = pins.join('&');
       } else if (text) {
         activeFilters[k] = text;
       }
