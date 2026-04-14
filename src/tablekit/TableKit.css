@@ -186,7 +186,7 @@
   top: 50%;
   transform: translateY(-50%);
   pointer-events: all;
-  cursor: grab;
+  cursor: pointer;
   font-size: 15px;
   color: #607d8b;
   opacity: 0.45;
@@ -267,6 +267,11 @@
   background: #ecf2fb;
 }
 
+/* שורה ניתנת ללחיצה כפולה — כף יד לגרירה */
+.tablekit-tr-clickable {
+  cursor: grab;
+}
+
 .tablekit-td {
   padding: 7px 12px;
   text-align: right;
@@ -279,6 +284,7 @@
   text-overflow: ellipsis;
   max-width: 0;
   position: relative;
+  cursor: grab;
 }
 
 /* ── Tooltip on cell hover ── */
