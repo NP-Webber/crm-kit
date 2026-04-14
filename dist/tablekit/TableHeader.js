@@ -87,7 +87,7 @@ var TableHeader = function TableHeader(_ref) {
               onFilterIconClick(col.key, e);
             },
             title: "\u05E1\u05D9\u05E0\u05D5\u05DF",
-            children: "\u25E2"
+            children: "\u25BC"
           }), onColumnResize && /*#__PURE__*/(0, _jsxRuntime.jsx)("span", {
             className: "tablekit-resize-handle",
             onMouseDown: function onMouseDown(e) {

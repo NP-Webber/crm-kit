@@ -75,7 +75,7 @@ const TableHeader = ({ columns, sortKey, sortOrder, onSort, columnWidths = {}, o
                   onClick={(e) => { e.stopPropagation(); onFilterIconClick(col.key, e); }}
                   title="סינון"
                 >
-                  &#9698;
+                  &#9660;
                 </span>
               )}
               {onColumnResize && (

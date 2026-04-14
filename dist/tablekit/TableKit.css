@@ -186,14 +186,14 @@
   top: 50%;
   transform: translateY(-50%);
   pointer-events: all;
-  cursor: pointer;
-  font-size: 13px;
-  color: #90a4ae;
-  opacity: 0;
+  cursor: grab;
+  font-size: 15px;
+  color: #607d8b;
+  opacity: 0.45;
   transition: opacity 0.15s, color 0.15s;
   z-index: 4;
   line-height: 1;
-  padding: 2px;
+  padding: 2px 3px;
   border-radius: 3px;
 }
 
@@ -323,9 +323,9 @@
   border-left: none;
 }
 
-/* Filter row — hidden, filters now inside header popup */
+/* Filter row */
 .tablekit-filter-row {
-  display: none;
+  /* visible — regular text filter inputs */
 }
 
 .tablekit-filter-input {
