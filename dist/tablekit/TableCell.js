@@ -16,6 +16,22 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
 function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
+var _getTextContent = function getTextContent(children) {
+  if (children === null || children === undefined) return '';
+  if (typeof children === 'string' || typeof children === 'number') return String(children);
+  if (typeof children === 'boolean') return '';
+  if (/*#__PURE__*/_react["default"].isValidElement(children)) {
+    // For select/dropdown elements, try to get displayed text
+    if (children.props) {
+      if (children.props.value !== undefined) return String(children.props.value);
+      if (children.props.children) return _getTextContent(children.props.children);
+      if (children.props.label) return String(children.props.label);
+    }
+    return '';
+  }
+  if (Array.isArray(children)) return children.map(_getTextContent).filter(Boolean).join(' ');
+  return '';
+};
 var TableCell = function TableCell(_ref) {
   var children = _ref.children,
     _ref$label = _ref.label,
@@ -23,9 +39,11 @@ var TableCell = function TableCell(_ref) {
     _ref$align = _ref.align,
     align = _ref$align === void 0 ? 'right' : _ref$align,
     rest = _objectWithoutProperties(_ref, _excluded);
+  var tipText = _getTextContent(children);
   return /*#__PURE__*/(0, _jsxRuntime.jsx)("td", _objectSpread(_objectSpread({
     className: "tablekit-td",
     "data-label": label,
+    "data-tooltip": tipText && tipText !== '—' ? tipText : undefined,
     style: {
       textAlign: align
     }

@@ -167,19 +167,49 @@ const TableKit = ({
 
   const [drawerRow, setDrawerRow] = useState(null);
 
-  // Drag-to-scroll for horizontal scrolling
+  // Filter popup state — open from header icon
+  const [openFilterCol, setOpenFilterCol] = useState(null);
+  const [filterPopupPos, setFilterPopupPos] = useState({ top: 0, right: 0 });
+
+  const getFilterState = useCallback((colKey) => {
+    return !!(filters[colKey] || (valueFilters[colKey] && valueFilters[colKey].length > 0) ||
+      (pinnedFilters[colKey] && pinnedFilters[colKey].length > 0) ||
+      (conditionFilters[colKey] && conditionFilters[colKey].operator));
+  }, [filters, valueFilters, pinnedFilters, conditionFilters]);
+
+  const handleFilterIconClick = useCallback((colKey, e) => {
+    e.stopPropagation();
+    if (openFilterCol === colKey) {
+      setOpenFilterCol(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setFilterPopupPos({
+      top: rect.bottom + 4,
+      right: Math.max(4, window.innerWidth - rect.right - 20),
+    });
+    setOpenFilterCol(colKey);
+  }, [openFilterCol]);
+
+  const handleFilterPopupClose = useCallback(() => {
+    setOpenFilterCol(null);
+  }, []);
+
+  // Drag-to-scroll for horizontal and vertical scrolling
   const containerRef = useRef(null);
-  const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
+  const dragState = useRef({ isDragging: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 });
 
   const handleMouseDown = useCallback((e) => {
     const container = containerRef.current;
     if (!container) return;
     // Don't hijack drags on interactive elements
     const tag = e.target.tagName;
-    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'TEXTAREA' || e.target.closest('.tablekit-resize-handle') || e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
-    // Only activate if table is wider than container
-    if (container.scrollWidth <= container.clientWidth) return;
-    dragState.current = { isDragging: true, startX: e.pageX - container.offsetLeft, scrollLeft: container.scrollLeft };
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'TEXTAREA' || e.target.closest('.tablekit-resize-handle') || e.target.closest('.tablekit-th-filter-icon') || e.target.closest('.tablekit-col-filter-dropdown') || e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
+    // Only activate if table is scrollable
+    const canScrollX = container.scrollWidth > container.clientWidth;
+    const canScrollY = container.scrollHeight > container.clientHeight;
+    if (!canScrollX && !canScrollY) return;
+    dragState.current = { isDragging: true, startX: e.pageX, startY: e.pageY, scrollLeft: container.scrollLeft, scrollTop: container.scrollTop };
     container.style.cursor = 'grabbing';
     container.style.userSelect = 'none';
   }, []);
@@ -188,7 +218,8 @@ const TableKit = ({
     const container = containerRef.current;
     if (!container || !dragState.current.isDragging) return;
     dragState.current.isDragging = false;
-    container.style.cursor = container.scrollWidth > container.clientWidth ? 'grab' : '';
+    const canScroll = container.scrollWidth > container.clientWidth || container.scrollHeight > container.clientHeight;
+    container.style.cursor = canScroll ? 'grab' : '';
     container.style.userSelect = '';
   }, []);
 
@@ -197,9 +228,10 @@ const TableKit = ({
     const container = containerRef.current;
     if (!container) return;
     e.preventDefault();
-    const x = e.pageX - container.offsetLeft;
-    const walk = (x - dragState.current.startX) * 1.5;
-    container.scrollLeft = dragState.current.scrollLeft - walk;
+    const walkX = (e.pageX - dragState.current.startX) * 1.5;
+    const walkY = (e.pageY - dragState.current.startY) * 1.5;
+    container.scrollLeft = dragState.current.scrollLeft - walkX;
+    container.scrollTop = dragState.current.scrollTop - walkY;
   }, []);
 
   useEffect(() => {
@@ -607,6 +639,9 @@ const TableKit = ({
             onSort={handleSort}
             columnWidths={columnWidths}
             onColumnResize={handleColumnResize}
+            filterState={getFilterState}
+            onFilterIconClick={handleFilterIconClick}
+            activeFilterCol={openFilterCol}
           />
 
           {showFilters && (
@@ -644,6 +679,31 @@ const TableKit = ({
           />
         </table>
       </div>
+
+      {/* Floating filter popup from header icon */}
+      {openFilterCol && (() => {
+        const col = visibleColumns.find(c => c.key === openFilterCol);
+        if (!col || col.filterable === false) return null;
+        return (
+          <ColumnFilter
+            key={`popup-${openFilterCol}`}
+            col={col}
+            data={data}
+            textValue={filters[col.key] || ''}
+            selectedValues={valueFilters[col.key] || []}
+            onTextChange={handleFilterChange}
+            onValuesChange={handleValueFilterChange}
+            fetchValues={fetchValuesFor ? fetchValuesFor(col.key) : undefined}
+            pinnedTexts={pinnedFilters[col.key] || []}
+            onPinnedTextsChange={handlePinnedTextsChange}
+            conditionFilter={conditionFilters[col.key] || null}
+            onConditionFilterChange={handleConditionFilterChange}
+            defaultOpen={true}
+            onClose={handleFilterPopupClose}
+            popupStyle={{ position: 'fixed', top: filterPopupPos.top, right: filterPopupPos.right, left: 'auto', zIndex: 9999 }}
+          />
+        );
+      })()}
 
       {/* Pagination */}
       <Pagination

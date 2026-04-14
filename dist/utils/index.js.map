@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","names":["_hebrewNumerals","require"],"sources":["../../src/utils/index.js"],"sourcesContent":["export { toHebrewNumeral } from './hebrewNumerals.js';\n"],"mappings":";;;;;;;;;;;AAAA,IAAAA,eAAA,GAAAC,OAAA","ignoreList":[]}
+{"version":3,"file":"index.js","names":["_hebrewNumerals","require"],"sources":["../../src/utils/index.js"],"sourcesContent":["export { toHebrewNumeral } from './hebrewNumerals.js';\r\n"],"mappings":";;;;;;;;;;;AAAA,IAAAA,eAAA,GAAAC,OAAA","ignoreList":[]}

@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from 'react';
 
-const TableHeader = ({ columns, sortKey, sortOrder, onSort, columnWidths = {}, onColumnResize }) => {
+const TableHeader = ({ columns, sortKey, sortOrder, onSort, columnWidths = {}, onColumnResize, filterState, onFilterIconClick, activeFilterCol }) => {
   const resizingRef = useRef(null);
 
   const renderSortIcon = (col) => {
@@ -52,31 +52,43 @@ const TableHeader = ({ columns, sortKey, sortOrder, onSort, columnWidths = {}, o
   return (
     <thead className="tablekit-thead">
       <tr>
-        {columns.map((col) => (
-          <th
-            key={col.key}
-            className={`tablekit-th ${col.sortable !== false ? 'sortable' : ''}`}
-            style={{
-              textAlign: col.align || 'right',
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-            onClick={() => col.sortable !== false && onSort(col.key)}
-          >
-            <span className="tablekit-th-content">
-              {col.title}
-              {renderSortIcon(col)}
-            </span>
-            {onColumnResize && (
-              <span
-                className="tablekit-resize-handle"
-                onMouseDown={(e) => startResize(e, col.key)}
-                onClick={(e) => e.stopPropagation()}
-                title="גרור לשינוי רוחב"
-              />
-            )}
-          </th>
-        ))}
+        {columns.map((col) => {
+          const hasFilter = filterState ? filterState(col.key) : false;
+          return (
+            <th
+              key={col.key}
+              className={`tablekit-th ${col.sortable !== false ? 'sortable' : ''}`}
+              style={{
+                textAlign: col.align || 'right',
+                position: 'relative',
+                overflow: 'visible',
+              }}
+              onClick={() => col.sortable !== false && onSort(col.key)}
+            >
+              <span className="tablekit-th-content">
+                {col.title}
+                {renderSortIcon(col)}
+              </span>
+              {col.filterable !== false && onFilterIconClick && (
+                <span
+                  className={`tablekit-th-filter-icon${hasFilter ? ' active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); onFilterIconClick(col.key, e); }}
+                  title="סינון"
+                >
+                  &#9698;
+                </span>
+              )}
+              {onColumnResize && (
+                <span
+                  className="tablekit-resize-handle"
+                  onMouseDown={(e) => startResize(e, col.key)}
+                  onClick={(e) => e.stopPropagation()}
+                  title="גרור לשינוי רוחב"
+                />
+              )}
+            </th>
+          );
+        })}
       </tr>
     </thead>
   );

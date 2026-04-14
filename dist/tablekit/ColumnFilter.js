@@ -97,8 +97,12 @@ var ColumnFilter = function ColumnFilter(_ref) {
     pinnedTexts = _ref$pinnedTexts === void 0 ? [] : _ref$pinnedTexts,
     onPinnedTextsChange = _ref.onPinnedTextsChange,
     conditionFilter = _ref.conditionFilter,
-    onConditionFilterChange = _ref.onConditionFilterChange;
-  var _useState = (0, _react.useState)(false),
+    onConditionFilterChange = _ref.onConditionFilterChange,
+    _ref$defaultOpen = _ref.defaultOpen,
+    defaultOpen = _ref$defaultOpen === void 0 ? false : _ref$defaultOpen,
+    onClose = _ref.onClose,
+    popupStyle = _ref.popupStyle;
+  var _useState = (0, _react.useState)(defaultOpen),
     _useState2 = _slicedToArray(_useState, 2),
     open = _useState2[0],
     setOpen = _useState2[1];
@@ -149,13 +153,16 @@ var ColumnFilter = function ColumnFilter(_ref) {
   }, [conditionFilter]);
   (0, _react.useEffect)(function () {
     var handler = function handler(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+        if (onClose) onClose();
+      }
     };
     document.addEventListener('mousedown', handler);
     return function () {
       return document.removeEventListener('mousedown', handler);
     };
-  }, []);
+  }, [onClose]);
   (0, _react.useEffect)(function () {
     if (!open) setIsAllDeselected(false);
   }, [open]);
@@ -195,6 +202,12 @@ var ColumnFilter = function ColumnFilter(_ref) {
       return _ref2.apply(this, arguments);
     };
   }();
+
+  // Load values on initial open if defaultOpen
+  (0, _react.useEffect)(function () {
+    if (defaultOpen && tab === 'values') loadValues();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   var handleOpen = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
       var next, rect;
@@ -203,6 +216,7 @@ var ColumnFilter = function ColumnFilter(_ref) {
           case 0:
             next = !open;
             setOpen(next);
+            if (!next && onClose) onClose();
             if (next && ref.current) {
               rect = ref.current.getBoundingClientRect();
               setDropdownPos({
@@ -280,6 +294,7 @@ var ColumnFilter = function ColumnFilter(_ref) {
     setCondVal2('');
     setSearch('');
     setOpen(false);
+    if (onClose) onClose();
   };
   var pinText = function pinText() {
     var val = textValue.trim();
@@ -383,7 +398,7 @@ var ColumnFilter = function ColumnFilter(_ref) {
       })
     }), open && /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
       className: "tablekit-col-filter-dropdown",
-      style: {
+      style: popupStyle || {
         position: 'fixed',
         top: dropdownPos.top,
         right: dropdownPos.right,

@@ -28,8 +28,11 @@ const ColumnFilter = ({
   onPinnedTextsChange,
   conditionFilter,
   onConditionFilterChange,
+  defaultOpen = false,
+  onClose,
+  popupStyle,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [search, setSearch] = useState('');
   const [serverValues, setServerValues] = useState(null);
   const [loadingValues, setLoadingValues] = useState(false);
@@ -49,11 +52,14 @@ const ColumnFilter = ({
 
   useEffect(() => {
     const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+        if (onClose) onClose();
+      }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, []);
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) setIsAllDeselected(false);
@@ -73,9 +79,16 @@ const ColumnFilter = ({
     }
   };
 
+  // Load values on initial open if defaultOpen
+  useEffect(() => {
+    if (defaultOpen && tab === 'values') loadValues();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleOpen = async () => {
     const next = !open;
     setOpen(next);
+    if (!next && onClose) onClose();
     if (next && ref.current) {
       const rect = ref.current.getBoundingClientRect();
       setDropdownPos({
@@ -130,6 +143,7 @@ const ColumnFilter = ({
     setCondVal2('');
     setSearch('');
     setOpen(false);
+    if (onClose) onClose();
   };
 
   const pinText = () => {
@@ -231,7 +245,7 @@ const ColumnFilter = ({
       {open && (
         <div
           className="tablekit-col-filter-dropdown"
-          style={{ position: 'fixed', top: dropdownPos.top, right: dropdownPos.right, left: 'auto' }}
+          style={popupStyle || { position: 'fixed', top: dropdownPos.top, right: dropdownPos.right, left: 'auto' }}
         >
           <div className="tablekit-filter-tabs">
             <button

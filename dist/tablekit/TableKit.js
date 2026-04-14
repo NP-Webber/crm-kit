@@ -264,52 +264,99 @@ var TableKit = function TableKit(_ref) {
     drawerRow = _useState20[0],
     setDrawerRow = _useState20[1];
 
-  // Drag-to-scroll for horizontal scrolling
-  var containerRef = (0, _react.useRef)(null);
-  var dragState = (0, _react.useRef)({ isDragging: false, startX: 0, scrollLeft: 0 });
+  // Filter popup state — open from header icon
+  var _useState21 = (0, _react.useState)(null),
+    _useState22 = _slicedToArray(_useState21, 2),
+    openFilterCol = _useState22[0],
+    setOpenFilterCol = _useState22[1];
+  var _useState23 = (0, _react.useState)({
+      top: 0,
+      right: 0
+    }),
+    _useState24 = _slicedToArray(_useState23, 2),
+    filterPopupPos = _useState24[0],
+    setFilterPopupPos = _useState24[1];
+  var getFilterState = (0, _react.useCallback)(function (colKey) {
+    return !!(filters[colKey] || valueFilters[colKey] && valueFilters[colKey].length > 0 || pinnedFilters[colKey] && pinnedFilters[colKey].length > 0 || conditionFilters[colKey] && conditionFilters[colKey].operator);
+  }, [filters, valueFilters, pinnedFilters, conditionFilters]);
+  var handleFilterIconClick = (0, _react.useCallback)(function (colKey, e) {
+    e.stopPropagation();
+    if (openFilterCol === colKey) {
+      setOpenFilterCol(null);
+      return;
+    }
+    var rect = e.currentTarget.getBoundingClientRect();
+    setFilterPopupPos({
+      top: rect.bottom + 4,
+      right: Math.max(4, window.innerWidth - rect.right - 20)
+    });
+    setOpenFilterCol(colKey);
+  }, [openFilterCol]);
+  var handleFilterPopupClose = (0, _react.useCallback)(function () {
+    setOpenFilterCol(null);
+  }, []);
 
+  // Drag-to-scroll for horizontal and vertical scrolling
+  var containerRef = (0, _react.useRef)(null);
+  var dragState = (0, _react.useRef)({
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    scrollLeft: 0,
+    scrollTop: 0
+  });
   var handleMouseDown = (0, _react.useCallback)(function (e) {
     var container = containerRef.current;
     if (!container) return;
+    // Don't hijack drags on interactive elements
     var tag = e.target.tagName;
-    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'TEXTAREA' || e.target.closest('.tablekit-resize-handle') || e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
-    if (container.scrollWidth <= container.clientWidth) return;
-    dragState.current = { isDragging: true, startX: e.pageX - container.offsetLeft, scrollLeft: container.scrollLeft };
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'TEXTAREA' || e.target.closest('.tablekit-resize-handle') || e.target.closest('.tablekit-th-filter-icon') || e.target.closest('.tablekit-col-filter-dropdown') || e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
+    // Only activate if table is scrollable
+    var canScrollX = container.scrollWidth > container.clientWidth;
+    var canScrollY = container.scrollHeight > container.clientHeight;
+    if (!canScrollX && !canScrollY) return;
+    dragState.current = {
+      isDragging: true,
+      startX: e.pageX,
+      startY: e.pageY,
+      scrollLeft: container.scrollLeft,
+      scrollTop: container.scrollTop
+    };
     container.style.cursor = 'grabbing';
     container.style.userSelect = 'none';
   }, []);
-
   var handleMouseUp = (0, _react.useCallback)(function () {
     var container = containerRef.current;
     if (!container || !dragState.current.isDragging) return;
     dragState.current.isDragging = false;
-    container.style.cursor = container.scrollWidth > container.clientWidth ? 'grab' : '';
+    var canScroll = container.scrollWidth > container.clientWidth || container.scrollHeight > container.clientHeight;
+    container.style.cursor = canScroll ? 'grab' : '';
     container.style.userSelect = '';
   }, []);
-
   var handleMouseMove = (0, _react.useCallback)(function (e) {
     if (!dragState.current.isDragging) return;
     var container = containerRef.current;
     if (!container) return;
     e.preventDefault();
-    var x = e.pageX - container.offsetLeft;
-    var walk = (x - dragState.current.startX) * 1.5;
-    container.scrollLeft = dragState.current.scrollLeft - walk;
+    var walkX = (e.pageX - dragState.current.startX) * 1.5;
+    var walkY = (e.pageY - dragState.current.startY) * 1.5;
+    container.scrollLeft = dragState.current.scrollLeft - walkX;
+    container.scrollTop = dragState.current.scrollTop - walkY;
   }, []);
-
   (0, _react.useEffect)(function () {
     document.addEventListener('mouseup', handleMouseUp);
-    return function () { document.removeEventListener('mouseup', handleMouseUp); };
+    return function () {
+      return document.removeEventListener('mouseup', handleMouseUp);
+    };
   }, [handleMouseUp]);
-
-  var _useState21 = (0, _react.useState)(function () {
+  var _useState25 = (0, _react.useState)(function () {
       return columns.map(function (c) {
         return c.key;
       });
     }),
-    _useState22 = _slicedToArray(_useState21, 2),
-    visibleKeys = _useState22[0],
-    setVisibleKeys = _useState22[1];
+    _useState26 = _slicedToArray(_useState25, 2),
+    visibleKeys = _useState26[0],
+    setVisibleKeys = _useState26[1];
   var columnKeysStr = columns.map(function (c) {
     return c.key;
   }).join(',');
@@ -586,10 +633,10 @@ var TableKit = function TableKit(_ref) {
   };
 
   // CSV Export
-  var _useState23 = (0, _react.useState)(false),
-    _useState24 = _slicedToArray(_useState23, 2),
-    exporting = _useState24[0],
-    setExporting = _useState24[1];
+  var _useState27 = (0, _react.useState)(false),
+    _useState28 = _slicedToArray(_useState27, 2),
+    exporting = _useState28[0],
+    setExporting = _useState28[1];
   var handleExport = /*#__PURE__*/function () {
     var _ref10 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
       var exportData, activeFilters, allKeys, header, rows, BOM, csvContent, blob, url, link, _t;
@@ -762,7 +809,10 @@ var TableKit = function TableKit(_ref) {
           sortOrder: sortOrder,
           onSort: handleSort,
           columnWidths: columnWidths,
-          onColumnResize: handleColumnResize
+          onColumnResize: handleColumnResize,
+          filterState: getFilterState,
+          onFilterIconClick: handleFilterIconClick,
+          activeFilterCol: openFilterCol
         }), showFilters && /*#__PURE__*/(0, _jsxRuntime.jsx)("thead", {
           children: /*#__PURE__*/(0, _jsxRuntime.jsx)("tr", {
             className: "tablekit-filter-row",
@@ -793,7 +843,34 @@ var TableKit = function TableKit(_ref) {
           onRowDoubleClick: handleRowDoubleClick
         })]
       })
-    }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Pagination["default"], {
+    }), openFilterCol && function () {
+      var col = visibleColumns.find(function (c) {
+        return c.key === openFilterCol;
+      });
+      if (!col || col.filterable === false) return null;
+      return /*#__PURE__*/(0, _jsxRuntime.jsx)(_ColumnFilter["default"], {
+        col: col,
+        data: data,
+        textValue: filters[col.key] || '',
+        selectedValues: valueFilters[col.key] || [],
+        onTextChange: handleFilterChange,
+        onValuesChange: handleValueFilterChange,
+        fetchValues: fetchValuesFor ? fetchValuesFor(col.key) : undefined,
+        pinnedTexts: pinnedFilters[col.key] || [],
+        onPinnedTextsChange: handlePinnedTextsChange,
+        conditionFilter: conditionFilters[col.key] || null,
+        onConditionFilterChange: handleConditionFilterChange,
+        defaultOpen: true,
+        onClose: handleFilterPopupClose,
+        popupStyle: {
+          position: 'fixed',
+          top: filterPopupPos.top,
+          right: filterPopupPos.right,
+          left: 'auto',
+          zIndex: 9999
+        }
+      }, "popup-".concat(openFilterCol));
+    }(), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Pagination["default"], {
       page: page,
       pageSize: pageSize,
       total: clientTotal,

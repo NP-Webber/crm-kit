@@ -15,7 +15,10 @@ var TableHeader = function TableHeader(_ref) {
     onSort = _ref.onSort,
     _ref$columnWidths = _ref.columnWidths,
     columnWidths = _ref$columnWidths === void 0 ? {} : _ref$columnWidths,
-    onColumnResize = _ref.onColumnResize;
+    onColumnResize = _ref.onColumnResize,
+    filterState = _ref.filterState,
+    onFilterIconClick = _ref.onFilterIconClick,
+    activeFilterCol = _ref.activeFilterCol;
   var resizingRef = (0, _react.useRef)(null);
   var renderSortIcon = function renderSortIcon(col) {
     if (col.sortable === false) return null;
@@ -63,12 +66,13 @@ var TableHeader = function TableHeader(_ref) {
     className: "tablekit-thead",
     children: /*#__PURE__*/(0, _jsxRuntime.jsx)("tr", {
       children: columns.map(function (col) {
+        var hasFilter = filterState ? filterState(col.key) : false;
         return /*#__PURE__*/(0, _jsxRuntime.jsxs)("th", {
           className: "tablekit-th ".concat(col.sortable !== false ? 'sortable' : ''),
           style: {
             textAlign: col.align || 'right',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'visible'
           },
           onClick: function onClick() {
             return col.sortable !== false && onSort(col.key);
@@ -76,6 +80,14 @@ var TableHeader = function TableHeader(_ref) {
           children: [/*#__PURE__*/(0, _jsxRuntime.jsxs)("span", {
             className: "tablekit-th-content",
             children: [col.title, renderSortIcon(col)]
+          }), col.filterable !== false && onFilterIconClick && /*#__PURE__*/(0, _jsxRuntime.jsx)("span", {
+            className: "tablekit-th-filter-icon".concat(hasFilter ? ' active' : ''),
+            onClick: function onClick(e) {
+              e.stopPropagation();
+              onFilterIconClick(col.key, e);
+            },
+            title: "\u05E1\u05D9\u05E0\u05D5\u05DF",
+            children: "\u25E2"
           }), onColumnResize && /*#__PURE__*/(0, _jsxRuntime.jsx)("span", {
             className: "tablekit-resize-handle",
             onMouseDown: function onMouseDown(e) {
