@@ -685,23 +685,38 @@ const TableKit = ({
         const col = visibleColumns.find(c => c.key === openFilterCol);
         if (!col || col.filterable === false) return null;
         return (
-          <ColumnFilter
-            key={`popup-${openFilterCol}`}
-            col={col}
-            data={data}
-            textValue={filters[col.key] || ''}
-            selectedValues={valueFilters[col.key] || []}
-            onTextChange={handleFilterChange}
-            onValuesChange={handleValueFilterChange}
-            fetchValues={fetchValuesFor ? fetchValuesFor(col.key) : undefined}
-            pinnedTexts={pinnedFilters[col.key] || []}
-            onPinnedTextsChange={handlePinnedTextsChange}
-            conditionFilter={conditionFilters[col.key] || null}
-            onConditionFilterChange={handleConditionFilterChange}
-            defaultOpen={true}
-            onClose={handleFilterPopupClose}
-            popupStyle={{ position: 'fixed', top: filterPopupPos.top, right: filterPopupPos.right, left: 'auto', zIndex: 9999 }}
-          />
+          <div
+            key={`popup-wrap-${openFilterCol}`}
+            style={{
+              position: 'fixed',
+              top: filterPopupPos.top,
+              right: filterPopupPos.right,
+              zIndex: 9999,
+              minWidth: 260,
+              background: '#fff',
+              border: '1px solid #c5cae9',
+              borderRadius: 8,
+              boxShadow: '0 4px 20px rgba(21,101,192,0.18)',
+              padding: '8px',
+            }}
+          >
+            <ColumnFilter
+              key={`popup-${openFilterCol}`}
+              col={col}
+              data={data}
+              textValue={filters[col.key] || ''}
+              selectedValues={valueFilters[col.key] || []}
+              onTextChange={handleFilterChange}
+              onValuesChange={handleValueFilterChange}
+              fetchValues={fetchValuesFor ? fetchValuesFor(col.key) : undefined}
+              pinnedTexts={pinnedFilters[col.key] || []}
+              onPinnedTextsChange={handlePinnedTextsChange}
+              conditionFilter={conditionFilters[col.key] || null}
+              onConditionFilterChange={handleConditionFilterChange}
+              defaultOpen={false}
+              onClose={handleFilterPopupClose}
+            />
+          </div>
         );
       })()}
 

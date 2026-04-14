@@ -848,28 +848,35 @@ var TableKit = function TableKit(_ref) {
         return c.key === openFilterCol;
       });
       if (!col || col.filterable === false) return null;
-      return /*#__PURE__*/(0, _jsxRuntime.jsx)(_ColumnFilter["default"], {
-        col: col,
-        data: data,
-        textValue: filters[col.key] || '',
-        selectedValues: valueFilters[col.key] || [],
-        onTextChange: handleFilterChange,
-        onValuesChange: handleValueFilterChange,
-        fetchValues: fetchValuesFor ? fetchValuesFor(col.key) : undefined,
-        pinnedTexts: pinnedFilters[col.key] || [],
-        onPinnedTextsChange: handlePinnedTextsChange,
-        conditionFilter: conditionFilters[col.key] || null,
-        onConditionFilterChange: handleConditionFilterChange,
-        defaultOpen: true,
-        onClose: handleFilterPopupClose,
-        popupStyle: {
+      return /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
+        style: {
           position: 'fixed',
           top: filterPopupPos.top,
           right: filterPopupPos.right,
-          left: 'auto',
-          zIndex: 9999
-        }
-      }, "popup-".concat(openFilterCol));
+          zIndex: 9999,
+          minWidth: 260,
+          background: '#fff',
+          border: '1px solid #c5cae9',
+          borderRadius: 8,
+          boxShadow: '0 4px 20px rgba(21,101,192,0.18)',
+          padding: '8px'
+        },
+        children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_ColumnFilter["default"], {
+          col: col,
+          data: data,
+          textValue: filters[col.key] || '',
+          selectedValues: valueFilters[col.key] || [],
+          onTextChange: handleFilterChange,
+          onValuesChange: handleValueFilterChange,
+          fetchValues: fetchValuesFor ? fetchValuesFor(col.key) : undefined,
+          pinnedTexts: pinnedFilters[col.key] || [],
+          onPinnedTextsChange: handlePinnedTextsChange,
+          conditionFilter: conditionFilters[col.key] || null,
+          onConditionFilterChange: handleConditionFilterChange,
+          defaultOpen: false,
+          onClose: handleFilterPopupClose
+        }, "popup-".concat(openFilterCol))
+      }, "popup-wrap-".concat(openFilterCol));
     }(), /*#__PURE__*/(0, _jsxRuntime.jsx)(_Pagination["default"], {
       page: page,
       pageSize: pageSize,
