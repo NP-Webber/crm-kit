@@ -44,10 +44,11 @@ var Pagination = function Pagination(_ref) {
         style: {
           marginRight: 12,
           padding: '4px 8px',
-          borderRadius: 4,
-          border: '1px solid #ccc'
+          borderRadius: 3,
+          border: '1px solid #d9dcde',
+          fontSize: '12px'
         },
-        children: [10, 20, 50, 100].map(function (s) {
+        children: [20, 50, 100, 200, 500].map(function (s) {
           return /*#__PURE__*/(0, _jsxRuntime.jsxs)("option", {
             value: s,
             children: [s, " \u05DC\u05E2\u05DE\u05D5\u05D3"]

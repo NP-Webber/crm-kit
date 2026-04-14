@@ -109,7 +109,7 @@ const TableKit = ({
   };
 
   const [page, setPage] = useState(() => parseInt(getParam('page', '1'), 10));
-  const [pageSize, setPageSize] = useState(() => parseInt(getParam('pageSize', '20'), 10));
+  const [pageSize, setPageSize] = useState(() => parseInt(getParam('pageSize', '100'), 10));
   const [sortKey, setSortKey] = useState(() => getParam('sort', ''));
   const [sortOrder, setSortOrder] = useState(() => getParam('order', 'asc'));
 
@@ -166,6 +166,46 @@ const TableKit = ({
   const hasCustomWidths = Object.keys(columnWidths).length > 0;
 
   const [drawerRow, setDrawerRow] = useState(null);
+
+  // Drag-to-scroll for horizontal scrolling
+  const containerRef = useRef(null);
+  const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
+
+  const handleMouseDown = useCallback((e) => {
+    const container = containerRef.current;
+    if (!container) return;
+    // Don't hijack drags on interactive elements
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'TEXTAREA' || e.target.closest('.tablekit-resize-handle') || e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
+    // Only activate if table is wider than container
+    if (container.scrollWidth <= container.clientWidth) return;
+    dragState.current = { isDragging: true, startX: e.pageX - container.offsetLeft, scrollLeft: container.scrollLeft };
+    container.style.cursor = 'grabbing';
+    container.style.userSelect = 'none';
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    const container = containerRef.current;
+    if (!container || !dragState.current.isDragging) return;
+    dragState.current.isDragging = false;
+    container.style.cursor = container.scrollWidth > container.clientWidth ? 'grab' : '';
+    container.style.userSelect = '';
+  }, []);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!dragState.current.isDragging) return;
+    const container = containerRef.current;
+    if (!container) return;
+    e.preventDefault();
+    const x = e.pageX - container.offsetLeft;
+    const walk = (x - dragState.current.startX) * 1.5;
+    container.scrollLeft = dragState.current.scrollLeft - walk;
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => document.removeEventListener('mouseup', handleMouseUp);
+  }, [handleMouseUp]);
 
   const [visibleKeys, setVisibleKeys] = useState(() =>
     columns.map((c) => c.key)
@@ -544,7 +584,13 @@ const TableKit = ({
       </div>
 
       {/* Table */}
-      <div className="tablekit-container">
+      <div
+        className="tablekit-container"
+        ref={containerRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseUp}
+      >
         <table className="tablekit-table">
           <colgroup>
             {visibleColumns.map((col) => {

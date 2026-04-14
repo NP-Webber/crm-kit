@@ -169,7 +169,7 @@ var TableKit = function TableKit(_ref) {
     page = _useState2[0],
     setPage = _useState2[1];
   var _useState3 = (0, _react.useState)(function () {
-      return parseInt(getParam('pageSize', '20'), 10);
+      return parseInt(getParam('pageSize', '100'), 10);
     }),
     _useState4 = _slicedToArray(_useState3, 2),
     pageSize = _useState4[0],
@@ -263,6 +263,45 @@ var TableKit = function TableKit(_ref) {
     _useState20 = _slicedToArray(_useState19, 2),
     drawerRow = _useState20[0],
     setDrawerRow = _useState20[1];
+
+  // Drag-to-scroll for horizontal scrolling
+  var containerRef = (0, _react.useRef)(null);
+  var dragState = (0, _react.useRef)({ isDragging: false, startX: 0, scrollLeft: 0 });
+
+  var handleMouseDown = (0, _react.useCallback)(function (e) {
+    var container = containerRef.current;
+    if (!container) return;
+    var tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'TEXTAREA' || e.target.closest('.tablekit-resize-handle') || e.target.closest('button') || e.target.closest('select') || e.target.closest('input')) return;
+    if (container.scrollWidth <= container.clientWidth) return;
+    dragState.current = { isDragging: true, startX: e.pageX - container.offsetLeft, scrollLeft: container.scrollLeft };
+    container.style.cursor = 'grabbing';
+    container.style.userSelect = 'none';
+  }, []);
+
+  var handleMouseUp = (0, _react.useCallback)(function () {
+    var container = containerRef.current;
+    if (!container || !dragState.current.isDragging) return;
+    dragState.current.isDragging = false;
+    container.style.cursor = container.scrollWidth > container.clientWidth ? 'grab' : '';
+    container.style.userSelect = '';
+  }, []);
+
+  var handleMouseMove = (0, _react.useCallback)(function (e) {
+    if (!dragState.current.isDragging) return;
+    var container = containerRef.current;
+    if (!container) return;
+    e.preventDefault();
+    var x = e.pageX - container.offsetLeft;
+    var walk = (x - dragState.current.startX) * 1.5;
+    container.scrollLeft = dragState.current.scrollLeft - walk;
+  }, []);
+
+  (0, _react.useEffect)(function () {
+    document.addEventListener('mouseup', handleMouseUp);
+    return function () { document.removeEventListener('mouseup', handleMouseUp); };
+  }, [handleMouseUp]);
+
   var _useState21 = (0, _react.useState)(function () {
       return columns.map(function (c) {
         return c.key;
@@ -700,6 +739,10 @@ var TableKit = function TableKit(_ref) {
       })]
     }), /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
       className: "tablekit-container",
+      ref: containerRef,
+      onMouseDown: handleMouseDown,
+      onMouseMove: handleMouseMove,
+      onMouseLeave: handleMouseUp,
       children: /*#__PURE__*/(0, _jsxRuntime.jsxs)("table", {
         className: "tablekit-table",
         children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("colgroup", {

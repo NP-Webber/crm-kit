@@ -1,14 +1,17 @@
 /* ========================================
    TableKit — מודול טבלאות עצמאי
-   RTL מלא + עברית
+   RTL מלא + עברית — AG Grid inspired
    ======================================== */
 
 /* מיכל חיצוני */
 .tablekit-wrapper {
   width: 100%;
   direction: rtl;
-  font-family: 'Assistant', 'Rubik', 'Arial', sans-serif;
+  font-family: 'Assistant', 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Toolbar */
@@ -89,9 +92,33 @@
 .tablekit-container {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #d9dcde;
+  border-radius: 4px;
   background: #fff;
+  cursor: grab;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f5f5f5;
+}
+
+.tablekit-container:active {
+  cursor: grabbing;
+}
+
+.tablekit-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tablekit-container::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.tablekit-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.tablekit-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 /* טבלה */
@@ -100,6 +127,8 @@
   border-collapse: collapse;
   min-width: 600px;
   table-layout: fixed;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 /* Header */
@@ -107,21 +136,31 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #f5f7fa;
+  background: #f8f8f8;
 }
 
 .tablekit-th {
-  padding: 12px 16px;
+  padding: 8px 12px;
   text-align: right;
-  font-weight: 700;
-  font-size: 14px;
-  color: #333;
-  border-bottom: 2px solid #d0d5dd;
+  font-weight: 600;
+  font-size: 13px;
+  color: #3b3b3b;
+  border-bottom: 1px solid #d9dcde;
+  border-left: 1px solid #d9dcde;
   white-space: nowrap;
   user-select: none;
   cursor: default;
   position: relative;
   overflow: hidden;
+  letter-spacing: 0.01em;
+}
+
+.tablekit-th:first-child {
+  border-right: none;
+}
+
+.tablekit-th:last-child {
+  border-left: none;
 }
 
 .tablekit-th-content {
@@ -158,7 +197,7 @@
 }
 
 .tablekit-th.sortable:hover {
-  background: #ebeef3;
+  background: #e8eaed;
 }
 
 .tablekit-sort-icon {
@@ -176,47 +215,70 @@
 /* .tablekit-tbody {} */
 
 .tablekit-tr {
-  transition: background 0.15s;
+  transition: background 0.1s ease;
 }
 
 .tablekit-tr:hover {
-  background: #f0f4ff;
+  background: #ecf2fb;
 }
 
 .tablekit-tr:nth-child(even) {
-  background: #fafafa;
+  background: #fcfcfc;
 }
 
 .tablekit-tr:nth-child(even):hover {
-  background: #f0f4ff;
+  background: #ecf2fb;
 }
 
 .tablekit-td {
-  padding: 10px 16px;
+  padding: 7px 12px;
   text-align: right;
-  font-size: 14px;
-  color: #444;
-  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  color: #222;
+  border-bottom: 1px solid #e2e2e2;
+  border-left: 1px solid #eaeaea;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+}
+
+.tablekit-td:first-child {
+  border-right: none;
+}
+
+.tablekit-td:last-child {
+  border-left: none;
 }
 
 /* Filter row */
 .tablekit-filter-row {
-  background: #f5f8fc;
+  background: #f5f7f9;
 }
 
 .tablekit-filter-cell {
-  padding: 6px 8px;
-  border-bottom: 1px solid #c5cae9;
+  padding: 4px 6px;
+  border-bottom: 1px solid #d9dcde;
+  border-left: 1px solid #eaeaea;
+}
+
+.tablekit-filter-cell:first-child {
+  border-right: none;
+}
+
+.tablekit-filter-cell:last-child {
+  border-left: none;
 }
 
 .tablekit-filter-input {
   width: 100%;
-  padding: 6px 10px;
-  border: 1px solid #c5cae9;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 4px 8px;
+  border: 1px solid #d9dcde;
+  border-radius: 3px;
+  font-size: 12px;
   direction: rtl;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .tablekit-filter-input:focus {
@@ -243,7 +305,7 @@
 .tablekit-skeleton-row {
   display: flex;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 7px 12px;
   border-bottom: 1px solid #eef1f5;
 }
 
@@ -266,15 +328,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  border-top: 1px solid #e3e8ef;
-  background: #f8fafd;
+  padding: 8px 12px;
+  border-top: 1px solid #d9dcde;
+  background: #fafafa;
   flex-wrap: wrap;
   gap: 8px;
 }
 
 .tablekit-pagination-info {
-  font-size: 13px;
+  font-size: 12px;
   color: #5c7a9e;
 }
 

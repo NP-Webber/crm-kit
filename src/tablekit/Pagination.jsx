@@ -34,9 +34,9 @@ const Pagination = ({ page, pageSize, total, onPageChange, onPageSizeChange }) =
           <select
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            style={{ marginRight: 12, padding: '4px 8px', borderRadius: 4, border: '1px solid #ccc' }}
+            style={{ marginRight: 12, padding: '4px 8px', borderRadius: 3, border: '1px solid #d9dcde', fontSize: '12px' }}
           >
-            {[10, 20, 50, 100].map((s) => (
+            {[20, 50, 100, 200, 500].map((s) => (
               <option key={s} value={s}>
                 {s} לעמוד
               </option>
