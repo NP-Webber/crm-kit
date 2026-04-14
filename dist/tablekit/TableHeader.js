@@ -18,7 +18,14 @@ var TableHeader = function TableHeader(_ref) {
     onColumnResize = _ref.onColumnResize,
     filterState = _ref.filterState,
     onFilterIconClick = _ref.onFilterIconClick,
-    activeFilterCol = _ref.activeFilterCol;
+    activeFilterCol = _ref.activeFilterCol,
+    _ref$pinnedFilters = _ref.pinnedFilters,
+    pinnedFilters = _ref$pinnedFilters === void 0 ? {} : _ref$pinnedFilters,
+    _ref$conditionFilters = _ref.conditionFilters,
+    conditionFilters = _ref$conditionFilters === void 0 ? {} : _ref$conditionFilters,
+    _ref$valueFilters = _ref.valueFilters,
+    valueFilters = _ref$valueFilters === void 0 ? {} : _ref$valueFilters,
+    onRemovePin = _ref.onRemovePin;
   var resizingRef = (0, _react.useRef)(null);
   var renderSortIcon = function renderSortIcon(col) {
     if (col.sortable === false) return null;
@@ -67,8 +74,12 @@ var TableHeader = function TableHeader(_ref) {
     children: /*#__PURE__*/(0, _jsxRuntime.jsx)("tr", {
       children: columns.map(function (col) {
         var hasFilter = filterState ? filterState(col.key) : false;
+        var pins = pinnedFilters[col.key] || [];
+        var vals = valueFilters[col.key] || [];
+        var cond = conditionFilters[col.key];
+        var hasChips = pins.length > 0 || vals.length > 0 || cond && cond.operator;
         return /*#__PURE__*/(0, _jsxRuntime.jsxs)("th", {
-          className: "tablekit-th ".concat(col.sortable !== false ? 'sortable' : ''),
+          className: "tablekit-th ".concat(col.sortable !== false ? 'sortable' : '').concat(hasChips ? ' has-filter-chips' : ''),
           style: {
             textAlign: col.align || 'right',
             position: 'relative',
@@ -88,6 +99,38 @@ var TableHeader = function TableHeader(_ref) {
             },
             title: "\u05E1\u05D9\u05E0\u05D5\u05DF",
             children: "\u25BC"
+          }), hasChips && /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
+            className: "tablekit-th-chips",
+            onClick: function onClick(e) {
+              return e.stopPropagation();
+            },
+            children: [pins.map(function (pin) {
+              return /*#__PURE__*/(0, _jsxRuntime.jsxs)("span", {
+                className: "tablekit-th-chip",
+                children: [/*#__PURE__*/(0, _jsxRuntime.jsx)("span", {
+                  className: "tablekit-th-chip-text",
+                  title: pin,
+                  children: pin
+                }), onRemovePin && /*#__PURE__*/(0, _jsxRuntime.jsx)("button", {
+                  type: "button",
+                  className: "tablekit-th-chip-remove",
+                  onClick: function onClick(e) {
+                    e.stopPropagation();
+                    onRemovePin(col.key, pin);
+                  },
+                  title: "\u05D4\u05E1\u05E8 \"".concat(pin, "\""),
+                  children: "\xD7"
+                })]
+              }, pin);
+            }), vals.length > 0 && /*#__PURE__*/(0, _jsxRuntime.jsxs)("span", {
+              className: "tablekit-th-chip tablekit-th-chip-count",
+              title: vals.join(', '),
+              children: [vals.length, " \u05E2\u05E8\u05DB\u05D9\u05DD"]
+            }), cond && cond.operator && /*#__PURE__*/(0, _jsxRuntime.jsx)("span", {
+              className: "tablekit-th-chip tablekit-th-chip-cond",
+              title: "".concat(cond.operator, " ").concat(cond.value || ''),
+              children: "\u05EA\u05E0\u05D0\u05D9"
+            })]
           }), onColumnResize && /*#__PURE__*/(0, _jsxRuntime.jsx)("span", {
             className: "tablekit-resize-handle",
             onMouseDown: function onMouseDown(e) {

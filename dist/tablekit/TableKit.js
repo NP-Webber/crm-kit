@@ -812,7 +812,15 @@ var TableKit = function TableKit(_ref) {
           onColumnResize: handleColumnResize,
           filterState: getFilterState,
           onFilterIconClick: handleFilterIconClick,
-          activeFilterCol: openFilterCol
+          activeFilterCol: openFilterCol,
+          pinnedFilters: pinnedFilters,
+          conditionFilters: conditionFilters,
+          valueFilters: valueFilters,
+          onRemovePin: function onRemovePin(colKey, pin) {
+            return handlePinnedTextsChange(colKey, (pinnedFilters[colKey] || []).filter(function (p) {
+              return p !== pin;
+            }));
+          }
         }), showFilters && /*#__PURE__*/(0, _jsxRuntime.jsx)("thead", {
           children: /*#__PURE__*/(0, _jsxRuntime.jsx)("tr", {
             className: "tablekit-filter-row",

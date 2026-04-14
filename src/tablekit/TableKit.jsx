@@ -642,6 +642,10 @@ const TableKit = ({
             filterState={getFilterState}
             onFilterIconClick={handleFilterIconClick}
             activeFilterCol={openFilterCol}
+            pinnedFilters={pinnedFilters}
+            conditionFilters={conditionFilters}
+            valueFilters={valueFilters}
+            onRemovePin={(colKey, pin) => handlePinnedTextsChange(colKey, (pinnedFilters[colKey] || []).filter(p => p !== pin))}
           />
 
           {showFilters && (
