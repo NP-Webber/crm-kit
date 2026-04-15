@@ -342,6 +342,12 @@
   cursor: grab;
 }
 
+/* ── Allow dropdowns/selects inside cells to overflow when active ── */
+.tablekit-td:focus-within {
+  overflow: visible;
+  z-index: 10;
+}
+
 /* ── Tooltip on cell hover ── */
 .tablekit-td[data-tooltip]:hover::after {
   content: attr(data-tooltip);
