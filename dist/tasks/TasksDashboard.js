@@ -33,6 +33,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; } /**
  * @param {Function} props.onDeleteTask    — (taskId) => void
  * @param {Function} props.onRefresh       — () => void
  * @param {Function} [props.onOpenClient]  — (task) => void — פתיחת כרטיס לקוח
+ * @param {Function} [props.onEditTask]     — (task) => void — עריכת משימה
  * @param {string}  [props.title]          — כותרת (ברירת מחדל: דשבורד משימות)
  */
 function TasksDashboard(_ref) {
@@ -48,6 +49,7 @@ function TasksDashboard(_ref) {
     onDeleteTask = _ref.onDeleteTask,
     onRefresh = _ref.onRefresh,
     onOpenClient = _ref.onOpenClient,
+    onEditTask = _ref.onEditTask,
     _ref$title = _ref.title,
     title = _ref$title === void 0 ? 'דשבורד משימות' : _ref$title;
   var _useState = (0, _react.useState)({
@@ -171,6 +173,14 @@ function TasksDashboard(_ref) {
             color: "info",
             title: "\u05E4\u05EA\u05D7 \u05DB\u05E8\u05D8\u05D9\u05E1 \u05DC\u05E7\u05D5\u05D7",
             children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.OpenInNew, {})
+          }), onEditTask && /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.IconButton, {
+            edge: "end",
+            onClick: function onClick() {
+              return onEditTask(task);
+            },
+            color: "primary",
+            title: "\u05E2\u05E8\u05D5\u05DA \u05DE\u05E9\u05D9\u05DE\u05D4",
+            children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.Edit, {})
           }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.IconButton, {
             edge: "end",
             onClick: function onClick() {

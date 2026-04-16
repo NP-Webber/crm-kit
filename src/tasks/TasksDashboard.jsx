@@ -31,6 +31,7 @@ import {
   Refresh as RefreshIcon,
   FilterList as FilterIcon,
   OpenInNew as OpenInNewIcon,
+  Edit as EditIcon,
   BarChart as BarChartIcon,
   Assignment as AssignmentIcon,
   Warning as WarningIcon,
@@ -57,6 +58,7 @@ import {
  * @param {Function} props.onDeleteTask    — (taskId) => void
  * @param {Function} props.onRefresh       — () => void
  * @param {Function} [props.onOpenClient]  — (task) => void — פתיחת כרטיס לקוח
+ * @param {Function} [props.onEditTask]     — (task) => void — עריכת משימה
  * @param {string}  [props.title]          — כותרת (ברירת מחדל: דשבורד משימות)
  */
 function TasksDashboard({
@@ -68,6 +70,7 @@ function TasksDashboard({
   onDeleteTask,
   onRefresh,
   onOpenClient,
+  onEditTask,
   title = 'דשבורד משימות'
 }) {
   const [filters, setFilters] = useState({
@@ -151,6 +154,11 @@ function TasksDashboard({
           {onOpenClient && (
             <IconButton edge="end" onClick={() => onOpenClient(task)} color="info" title="פתח כרטיס לקוח">
               <OpenInNewIcon />
+            </IconButton>
+          )}
+          {onEditTask && (
+            <IconButton edge="end" onClick={() => onEditTask(task)} color="primary" title="ערוך משימה">
+              <EditIcon />
             </IconButton>
           )}
           <IconButton edge="end" onClick={() => handleToggleStatus(task.id, task.status)} color={task.status === 'completed' ? 'default' : 'success'}>
