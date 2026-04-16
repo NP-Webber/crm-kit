@@ -11,8 +11,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "babel src --out-dir dist --copy-files --source-maps",
-    "prepare": "npm run build"
+    "build": "babel src --out-dir dist --copy-files --source-maps"
   },
   "peerDependencies": {
     "@emotion/react": ">=11.0.0",
