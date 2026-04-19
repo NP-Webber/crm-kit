@@ -372,81 +372,66 @@ function TasksDashboard(_ref) {
       children: /*#__PURE__*/(0, _jsxRuntime.jsxs)(_index2.DashboardGrid, {
         columns: 5,
         gap: 2,
-        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Box, {
+        children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
+          icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.Assignment, {}),
+          label: "\u05E1\u05D4\u05F4\u05DB \u05DE\u05E9\u05D9\u05DE\u05D5\u05EA",
+          value: stats.total,
+          color: "#1976d2",
           onClick: function onClick() {
             return handleCardFilter(null);
           },
-          sx: {
-            cursor: 'pointer',
-            outline: activeFilter === null ? '2px solid #1976d2' : 'none',
-            borderRadius: 2
-          },
-          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
-            icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.Assignment, {}),
-            label: "\u05E1\u05D4\u05F4\u05DB \u05DE\u05E9\u05D9\u05DE\u05D5\u05EA",
-            value: stats.total,
-            color: "#1976d2"
-          })
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Box, {
+          sx: activeFilter === null ? {
+            outline: '2px solid #1976d2',
+            borderColor: '#1976d2'
+          } : {}
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
+          icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.HourglassEmpty, {}),
+          label: "\u05DE\u05DE\u05EA\u05D9\u05E0\u05D5\u05EA",
+          value: stats.pending,
+          color: "#ed6c02",
           onClick: function onClick() {
             return handleCardFilter('pending');
           },
-          sx: {
-            cursor: 'pointer',
-            outline: activeFilter === 'pending' ? '2px solid #ed6c02' : 'none',
-            borderRadius: 2
-          },
-          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
-            icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.HourglassEmpty, {}),
-            label: "\u05DE\u05DE\u05EA\u05D9\u05E0\u05D5\u05EA",
-            value: stats.pending,
-            color: "#ed6c02"
-          })
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Box, {
+          sx: activeFilter === 'pending' ? {
+            outline: '2px solid #ed6c02',
+            borderColor: '#ed6c02'
+          } : {}
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
+          icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.TaskAlt, {}),
+          label: "\u05D4\u05D5\u05E9\u05DC\u05DE\u05D5",
+          value: stats.completed,
+          color: "#2e7d32",
           onClick: function onClick() {
             return handleCardFilter('completed');
           },
-          sx: {
-            cursor: 'pointer',
-            outline: activeFilter === 'completed' ? '2px solid #2e7d32' : 'none',
-            borderRadius: 2
-          },
-          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
-            icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.TaskAlt, {}),
-            label: "\u05D4\u05D5\u05E9\u05DC\u05DE\u05D5",
-            value: stats.completed,
-            color: "#2e7d32"
-          })
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Box, {
+          sx: activeFilter === 'completed' ? {
+            outline: '2px solid #2e7d32',
+            borderColor: '#2e7d32'
+          } : {}
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
+          icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.Warning, {}),
+          label: "\u05D1\u05D0\u05D9\u05D7\u05D5\u05E8",
+          value: stats.overdue,
+          color: "#d32f2f",
           onClick: function onClick() {
             return handleCardFilter('overdue');
           },
-          sx: {
-            cursor: 'pointer',
-            outline: activeFilter === 'overdue' ? '2px solid #d32f2f' : 'none',
-            borderRadius: 2
-          },
-          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
-            icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.Warning, {}),
-            label: "\u05D1\u05D0\u05D9\u05D7\u05D5\u05E8",
-            value: stats.overdue,
-            color: "#d32f2f"
-          })
-        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Box, {
+          sx: activeFilter === 'overdue' ? {
+            outline: '2px solid #d32f2f',
+            borderColor: '#d32f2f'
+          } : {}
+        }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
+          icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.PriorityHigh, {}),
+          label: "\u05E2\u05D3\u05D9\u05E4\u05D5\u05EA \u05D2\u05D1\u05D5\u05D4\u05D4",
+          value: stats.highPriority,
+          color: "#9c27b0",
           onClick: function onClick() {
             return handleCardFilter('highPriority');
           },
-          sx: {
-            cursor: 'pointer',
-            outline: activeFilter === 'highPriority' ? '2px solid #9c27b0' : 'none',
-            borderRadius: 2
-          },
-          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_index2.StatCard, {
-            icon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_iconsMaterial.PriorityHigh, {}),
-            label: "\u05E2\u05D3\u05D9\u05E4\u05D5\u05EA \u05D2\u05D1\u05D5\u05D4\u05D4",
-            value: stats.highPriority,
-            color: "#9c27b0"
-          })
+          sx: activeFilter === 'highPriority' ? {
+            outline: '2px solid #9c27b0',
+            borderColor: '#9c27b0'
+          } : {}
         })]
       })
     }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Box, {
@@ -463,7 +448,11 @@ function TasksDashboard(_ref) {
         showExport: true,
         showFilters: true,
         onRowDoubleClick: function onRowDoubleClick(row) {
-          return onOpenClient ? onOpenClient(row) : handleOpenEdit(row);
+          if (row.client_id && onOpenClient) {
+            onOpenClient(row);
+          } else {
+            handleOpenEdit(row);
+          }
         }
       })
     }), /*#__PURE__*/(0, _jsxRuntime.jsxs)(_material.Dialog, {

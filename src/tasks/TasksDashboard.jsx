@@ -247,21 +247,46 @@ function TasksDashboard({
       {/* כרטיסי סטטיסטיקה */}
       <DashboardPanel title="סיכום משימות" defaultOpen={true}>
         <DashboardGrid columns={5} gap={2}>
-          <Box onClick={() => handleCardFilter(null)} sx={{ cursor: 'pointer', outline: activeFilter === null ? '2px solid #1976d2' : 'none', borderRadius: 2 }}>
-            <StatCard icon={<AssignmentIcon />} label='סה״כ משימות' value={stats.total} color="#1976d2" />
-          </Box>
-          <Box onClick={() => handleCardFilter('pending')} sx={{ cursor: 'pointer', outline: activeFilter === 'pending' ? '2px solid #ed6c02' : 'none', borderRadius: 2 }}>
-            <StatCard icon={<HourglassIcon />} label="ממתינות" value={stats.pending} color="#ed6c02" />
-          </Box>
-          <Box onClick={() => handleCardFilter('completed')} sx={{ cursor: 'pointer', outline: activeFilter === 'completed' ? '2px solid #2e7d32' : 'none', borderRadius: 2 }}>
-            <StatCard icon={<TaskAltIcon />} label="הושלמו" value={stats.completed} color="#2e7d32" />
-          </Box>
-          <Box onClick={() => handleCardFilter('overdue')} sx={{ cursor: 'pointer', outline: activeFilter === 'overdue' ? '2px solid #d32f2f' : 'none', borderRadius: 2 }}>
-            <StatCard icon={<WarningIcon />} label="באיחור" value={stats.overdue} color="#d32f2f" />
-          </Box>
-          <Box onClick={() => handleCardFilter('highPriority')} sx={{ cursor: 'pointer', outline: activeFilter === 'highPriority' ? '2px solid #9c27b0' : 'none', borderRadius: 2 }}>
-            <StatCard icon={<PriorityHighIcon />} label="עדיפות גבוהה" value={stats.highPriority} color="#9c27b0" />
-          </Box>
+          <StatCard
+            icon={<AssignmentIcon />}
+            label='סה״כ משימות'
+            value={stats.total}
+            color="#1976d2"
+            onClick={() => handleCardFilter(null)}
+            sx={activeFilter === null ? { outline: '2px solid #1976d2', borderColor: '#1976d2' } : {}}
+          />
+          <StatCard
+            icon={<HourglassIcon />}
+            label="ממתינות"
+            value={stats.pending}
+            color="#ed6c02"
+            onClick={() => handleCardFilter('pending')}
+            sx={activeFilter === 'pending' ? { outline: '2px solid #ed6c02', borderColor: '#ed6c02' } : {}}
+          />
+          <StatCard
+            icon={<TaskAltIcon />}
+            label="הושלמו"
+            value={stats.completed}
+            color="#2e7d32"
+            onClick={() => handleCardFilter('completed')}
+            sx={activeFilter === 'completed' ? { outline: '2px solid #2e7d32', borderColor: '#2e7d32' } : {}}
+          />
+          <StatCard
+            icon={<WarningIcon />}
+            label="באיחור"
+            value={stats.overdue}
+            color="#d32f2f"
+            onClick={() => handleCardFilter('overdue')}
+            sx={activeFilter === 'overdue' ? { outline: '2px solid #d32f2f', borderColor: '#d32f2f' } : {}}
+          />
+          <StatCard
+            icon={<PriorityHighIcon />}
+            label="עדיפות גבוהה"
+            value={stats.highPriority}
+            color="#9c27b0"
+            onClick={() => handleCardFilter('highPriority')}
+            sx={activeFilter === 'highPriority' ? { outline: '2px solid #9c27b0', borderColor: '#9c27b0' } : {}}
+          />
         </DashboardGrid>
       </DashboardPanel>
 
@@ -276,7 +301,13 @@ function TasksDashboard({
           showColumnPicker={true}
           showExport={true}
           showFilters={true}
-          onRowDoubleClick={(row) => onOpenClient ? onOpenClient(row) : handleOpenEdit(row)}
+          onRowDoubleClick={(row) => {
+            if (row.client_id && onOpenClient) {
+              onOpenClient(row)
+            } else {
+              handleOpenEdit(row)
+            }
+          }}
         />
       </Box>
 
