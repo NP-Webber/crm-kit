@@ -1,296 +1,360 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Box,
-  Typography,
-  Paper,
-  Grid,
-  IconButton,
   Chip,
+  CircularProgress,
+  Alert,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
   TextField,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  CircularProgress,
-  Alert,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button
+  Typography
 } from '@mui/material'
 import {
-  Task as TaskIcon,
-  CheckCircle as CheckCircleIcon,
-  PendingActions as PendingIcon,
-  Delete as DeleteIcon,
-  Refresh as RefreshIcon,
-  FilterList as FilterIcon,
-  OpenInNew as OpenInNewIcon,
   Edit as EditIcon,
-  BarChart as BarChartIcon,
+  Delete as DeleteIcon,
+  CheckCircle as CheckCircleIcon,
+  Undo as UndoIcon,
   Assignment as AssignmentIcon,
+  HourglassEmpty as HourglassIcon,
   Warning as WarningIcon,
-  Today as TodayIcon
+  PriorityHigh as PriorityHighIcon,
+  TaskAlt as TaskAltIcon
 } from '@mui/icons-material'
+import { TableKit } from '../tablekit/index.js'
 import { StatCard, DashboardGrid, DashboardPanel } from '../dashboard/index.js'
-import {
-  getPriorityColor,
-  getPriorityText,
-  getTaskTypeText,
-  categorizeTasksByDate,
-  getTaskStats
-} from './taskUtils.js'
+import { getPriorityColor, getPriorityText } from './taskUtils.js'
 
 /**
- * TasksDashboard — דשבורד משימות גנרי
+ * TasksDashboard — דשבורד משימות גנרי עם טבלה
  *
- * @param {Object} props
- * @param {Array}   props.tasks            — מערך משימות
- * @param {Array}   props.users            — מערך משתמשים [{ username, role }]
- * @param {boolean} props.isLoading        — טוען?
- * @param {*}       props.error            — שגיאה
+ * @param {Object}   props
+ * @param {Array}    props.tasks           — מערך משימות
+ * @param {Array}    props.users           — מערך משתמשים [{ username, display_name }]
+ * @param {Array}    props.taskTypes       — סוגי משימות [{ name, description }]
+ * @param {boolean}  props.isLoading       — טוען?
+ * @param {*}        props.error           — שגיאה
  * @param {Function} props.onUpdateStatus  — (taskId, newStatus) => void
+ * @param {Function} props.onUpdateTask    — (taskId, fields) => void
  * @param {Function} props.onDeleteTask    — (taskId) => void
- * @param {Function} props.onRefresh       — () => void
  * @param {Function} [props.onOpenClient]  — (task) => void — פתיחת כרטיס לקוח
- * @param {Function} [props.onEditTask]     — (task) => void — עריכת משימה
- * @param {string}  [props.title]          — כותרת (ברירת מחדל: דשבורד משימות)
+ * @param {string}   [props.title]         — כותרת (ברירת מחדל: ניהול משימות)
  */
 function TasksDashboard({
   tasks = [],
   users = [],
+  taskTypes = [],
   isLoading = false,
   error = null,
   onUpdateStatus,
+  onUpdateTask,
   onDeleteTask,
-  onRefresh,
   onOpenClient,
-  onEditTask,
-  title = 'דשבורד משימות'
+  title = 'ניהול משימות'
 }) {
-  const [filters, setFilters] = useState({
-    status: 'pending',
-    assigned_to: '',
-    due_date_from: '',
-    due_date_to: ''
-  })
-
+  const [activeFilter, setActiveFilter] = useState(null)
+  const [editDialog, setEditDialog] = useState({ open: false, task: null })
   const [deleteDialog, setDeleteDialog] = useState({ open: false, taskId: null })
+  const [editForm, setEditForm] = useState({})
 
-  // ── סינון לוקאלי ──
-  const filteredTasks = tasks.filter(t => {
-    if (filters.status && t.status !== filters.status) return false
-    if (filters.assigned_to && t.assigned_to !== filters.assigned_to) return false
-    if (filters.due_date_from && t.due_date < filters.due_date_from) return false
-    if (filters.due_date_to && t.due_date > filters.due_date_to) return false
-    return true
-  })
+  // סטטיסטיקות
+  const stats = useMemo(() => {
+    if (!Array.isArray(tasks)) return { total: 0, pending: 0, completed: 0, overdue: 0, highPriority: 0 }
+    const today = new Date().toISOString().split('T')[0]
+    return {
+      total: tasks.length,
+      pending: tasks.filter(t => t.status === 'pending').length,
+      completed: tasks.filter(t => t.status === 'completed').length,
+      overdue: tasks.filter(t => t.status === 'pending' && t.due_date && t.due_date.split('T')[0] < today).length,
+      highPriority: tasks.filter(t => t.status === 'pending' && t.priority === 'high').length
+    }
+  }, [tasks])
 
-  const handleToggleStatus = (taskId, currentStatus) => {
-    const newStatus = currentStatus === 'pending' ? 'completed' : 'pending'
-    onUpdateStatus?.(taskId, newStatus)
+  // סינון לפי כרטיס פעיל
+  const filteredTasks = useMemo(() => {
+    if (!Array.isArray(tasks)) return []
+    const today = new Date().toISOString().split('T')[0]
+    switch (activeFilter) {
+      case 'pending':      return tasks.filter(t => t.status === 'pending')
+      case 'completed':    return tasks.filter(t => t.status === 'completed')
+      case 'overdue':      return tasks.filter(t => t.status === 'pending' && t.due_date && t.due_date.split('T')[0] < today)
+      case 'highPriority': return tasks.filter(t => t.status === 'pending' && t.priority === 'high')
+      default:             return tasks
+    }
+  }, [tasks, activeFilter])
+
+  const handleCardFilter = (key) => setActiveFilter(prev => prev === key ? null : key)
+
+  const handleToggleStatus = (task) => {
+    const newStatus = task.status === 'pending' ? 'completed' : 'pending'
+    onUpdateStatus?.(task.id, newStatus)
   }
 
-  const handleDeleteTask = (taskId) => {
-    setDeleteDialog({ open: true, taskId })
+  const handleOpenEdit = (task) => {
+    setEditForm({
+      task_type:   task.task_type   || '',
+      description: task.description || '',
+      assigned_to: task.assigned_to || '',
+      due_date:    task.due_date ? task.due_date.split('T')[0] : '',
+      priority:    task.priority    || 'normal',
+      status:      task.status      || 'pending'
+    })
+    setEditDialog({ open: true, task })
   }
 
-  const confirmDelete = () => {
+  const handleSaveEdit = () => {
+    if (!editDialog.task) return
+    onUpdateTask?.(editDialog.task.id, editForm)
+    setEditDialog({ open: false, task: null })
+  }
+
+  const handleConfirmDelete = () => {
+    if (!deleteDialog.taskId) return
     onDeleteTask?.(deleteDialog.taskId)
     setDeleteDialog({ open: false, taskId: null })
   }
 
-  const handleFilterChange = (field, value) => {
-    setFilters(prev => ({ ...prev, [field]: value }))
+  const getPriorityLabel    = (p) => getPriorityText(p)  || p || 'רגיל'
+  const getPriorityChipColor = (p) => getPriorityColor(p) || 'default'
+
+  const getStatusLabel = (s) => s === 'pending' ? 'ממתין' : s === 'completed' ? 'הושלם' : s
+
+  const getTaskTypeLabel = (type) => {
+    const found = taskTypes.find(t => t.name === type)
+    return found ? (found.description || found.name) : (type || '-')
   }
 
-  // ── קטגוריות ──
-  const { overdue: overdueTasks, today: todayTasks, upcoming: upcomingTasks, completed: completedTasks } =
-    categorizeTasksByDate(filteredTasks)
-  const stats = getTaskStats(tasks) // סטטיסטיקות על *כל* המשימות
+  const isOverdue = (task) => {
+    if (task.status === 'completed') return false
+    const today = new Date().toISOString().split('T')[0]
+    return task.due_date && task.due_date.split('T')[0] < today
+  }
 
-  // ── רינדור שורת משימה ──
-  const renderTaskItem = (task, bgColor) => (
-    <Paper key={task.id} sx={{ mb: 1, bgcolor: bgColor }}>
-      <ListItem>
-        <ListItemText
-          primary={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-              <Typography variant="body1" sx={{
-                fontWeight: 'bold',
-                ...(task.status === 'completed' ? { textDecoration: 'line-through', color: 'text.secondary' } : {})
-              }}>
-                {task.client_name} {task.client_family}
-              </Typography>
-              <Chip label={getTaskTypeText(task.task_type)} size="small" color={task.status === 'completed' ? 'default' : 'primary'} variant={task.status === 'completed' ? 'outlined' : 'filled'} />
-              {task.status !== 'completed' && (
-                <Chip label={getPriorityText(task.priority)} size="small" color={getPriorityColor(task.priority)} />
-              )}
-              {task.assigned_to && task.status !== 'completed' && (
-                <Chip label={`שיוך: ${task.assigned_to}`} size="small" variant="outlined" />
-              )}
-            </Box>
-          }
-          secondary={
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="body2" sx={task.status === 'completed' ? { color: 'text.secondary' } : {}}>
-                {task.description}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {task.status === 'completed'
-                  ? `הושלם: ${task.formatted_completed_at || ''}`
-                  : `תאריך יעד: ${task.formatted_due_date || task.due_date} | נוצר על ידי: ${task.created_by_name || ''} | טלפון: ${task.client_phone || ''}`
-                }
-              </Typography>
-            </Box>
-          }
-        />
-        <ListItemSecondaryAction>
-          {onOpenClient && (
-            <IconButton edge="end" onClick={() => onOpenClient(task)} color="info" title="פתח כרטיס לקוח">
-              <OpenInNewIcon />
+  const columns = [
+    { key: 'id', title: '#', width: '60px', sortable: true },
+    {
+      key: 'client_name',
+      title: 'לקוח',
+      width: '140px',
+      sortable: true,
+      filterable: true,
+      render: (val, row) => {
+        const fullName = [row.client_name, row.client_family].filter(Boolean).join(' ')
+        return (
+          <Typography
+            variant="body2"
+            sx={{ cursor: row.client_id ? 'pointer' : 'default', color: row.client_id ? 'primary.main' : 'text.primary', '&:hover': row.client_id ? { textDecoration: 'underline' } : {} }}
+            onClick={(e) => { e.stopPropagation(); onOpenClient?.(row) }}
+          >
+            {fullName || '-'}
+          </Typography>
+        )
+      }
+    },
+    {
+      key: 'task_type',
+      title: 'סוג משימה',
+      width: '120px',
+      sortable: true,
+      filterable: true,
+      render: (val) => <Chip label={getTaskTypeLabel(val)} size="small" color="primary" variant="outlined" />
+    },
+    { key: 'description', title: 'תיאור', width: '200px', filterable: true },
+    {
+      key: 'assigned_to',
+      title: 'שיוך',
+      width: '100px',
+      sortable: true,
+      filterable: true,
+      render: (val) => val === 'all' ? 'כולם' : (val || '-')
+    },
+    {
+      key: 'priority',
+      title: 'עדיפות',
+      width: '90px',
+      sortable: true,
+      filterable: true,
+      render: (val) => <Chip label={getPriorityLabel(val)} size="small" color={getPriorityChipColor(val)} />
+    },
+    {
+      key: 'formatted_due_date',
+      title: 'תאריך יעד',
+      width: '110px',
+      sortable: true,
+      render: (val, row) => (
+        <Typography variant="body2" sx={{ color: isOverdue(row) ? 'error.main' : 'text.primary', fontWeight: isOverdue(row) ? 'bold' : 'normal' }}>
+          {val || '-'}
+        </Typography>
+      )
+    },
+    {
+      key: 'status',
+      title: 'סטטוס',
+      width: '100px',
+      sortable: true,
+      filterable: true,
+      render: (val) => (
+        <Chip label={getStatusLabel(val)} size="small" color={val === 'completed' ? 'success' : 'warning'} />
+      )
+    },
+    {
+      key: 'created_by_name',
+      title: 'נוצר ע"י',
+      width: '100px',
+      sortable: true,
+      filterable: true,
+      render: (val) => val || '-'
+    },
+    {
+      key: 'actions',
+      title: 'פעולות',
+      width: '130px',
+      render: (_, row) => (
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Tooltip title={row.status === 'pending' ? 'סמן כהושלם' : 'החזר לממתין'}>
+            <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleToggleStatus(row) }} color={row.status === 'pending' ? 'success' : 'default'}>
+              {row.status === 'pending' ? <CheckCircleIcon fontSize="small" /> : <UndoIcon fontSize="small" />}
             </IconButton>
-          )}
-          {onEditTask && (
-            <IconButton edge="end" onClick={() => onEditTask(task)} color="primary" title="ערוך משימה">
-              <EditIcon />
+          </Tooltip>
+          <Tooltip title="ערוך">
+            <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleOpenEdit(row) }} color="primary">
+              <EditIcon fontSize="small" />
             </IconButton>
-          )}
-          <IconButton edge="end" onClick={() => handleToggleStatus(task.id, task.status)} color={task.status === 'completed' ? 'default' : 'success'}>
-            {task.status === 'completed' ? <PendingIcon /> : <CheckCircleIcon />}
-          </IconButton>
-          <IconButton edge="end" onClick={() => handleDeleteTask(task.id)} color="error">
-            <DeleteIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-    </Paper>
-  )
+          </Tooltip>
+          <Tooltip title="מחק">
+            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setDeleteDialog({ open: true, taskId: row.id }) }} color="error">
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )
+    }
+  ]
+
+  if (isLoading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>
+  if (error)     return <Alert severity="error">שגיאה בטעינת משימות</Alert>
 
   return (
-    <Box sx={{ p: 3 }}>
-      {/* כותרת */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
-          <TaskIcon sx={{ mr: 1, verticalAlign: 'middle', fontSize: 35 }} />
-          {title}
-        </Typography>
-        {onRefresh && (
-          <IconButton onClick={onRefresh} color="primary">
-            <RefreshIcon />
-          </IconButton>
-        )}
-      </Box>
-
-      {/* סטטיסטיקות */}
-      <DashboardPanel title="סטטיסטיקות משימות" icon={<BarChartIcon />} color="#3498db" subtitle="סיכום מצב משימות" defaultOpen>
-        <DashboardGrid columns={5} sx={{ mb: 0 }}>
-          <StatCard icon={<AssignmentIcon />} label="סה״כ משימות" value={stats.total} color="#3498db" />
-          <StatCard icon={<PendingIcon />} label="ממתינות" value={stats.pending} color="#f39c12" />
-          <StatCard icon={<WarningIcon />} label="באיחור" value={stats.overdue} color="#e74c3c" />
-          <StatCard icon={<TodayIcon />} label="להיום" value={stats.today} color="#9b59b6" />
-          <StatCard icon={<CheckCircleIcon />} label="הושלמו" value={stats.completed} color="#2ecc71" />
+    <Box>
+      {/* כרטיסי סטטיסטיקה */}
+      <DashboardPanel title="סיכום משימות" defaultOpen={true}>
+        <DashboardGrid columns={5} gap={2}>
+          <Box onClick={() => handleCardFilter(null)} sx={{ cursor: 'pointer', outline: activeFilter === null ? '2px solid #1976d2' : 'none', borderRadius: 2 }}>
+            <StatCard icon={<AssignmentIcon />} label='סה״כ משימות' value={stats.total} color="#1976d2" />
+          </Box>
+          <Box onClick={() => handleCardFilter('pending')} sx={{ cursor: 'pointer', outline: activeFilter === 'pending' ? '2px solid #ed6c02' : 'none', borderRadius: 2 }}>
+            <StatCard icon={<HourglassIcon />} label="ממתינות" value={stats.pending} color="#ed6c02" />
+          </Box>
+          <Box onClick={() => handleCardFilter('completed')} sx={{ cursor: 'pointer', outline: activeFilter === 'completed' ? '2px solid #2e7d32' : 'none', borderRadius: 2 }}>
+            <StatCard icon={<TaskAltIcon />} label="הושלמו" value={stats.completed} color="#2e7d32" />
+          </Box>
+          <Box onClick={() => handleCardFilter('overdue')} sx={{ cursor: 'pointer', outline: activeFilter === 'overdue' ? '2px solid #d32f2f' : 'none', borderRadius: 2 }}>
+            <StatCard icon={<WarningIcon />} label="באיחור" value={stats.overdue} color="#d32f2f" />
+          </Box>
+          <Box onClick={() => handleCardFilter('highPriority')} sx={{ cursor: 'pointer', outline: activeFilter === 'highPriority' ? '2px solid #9c27b0' : 'none', borderRadius: 2 }}>
+            <StatCard icon={<PriorityHighIcon />} label="עדיפות גבוהה" value={stats.highPriority} color="#9c27b0" />
+          </Box>
         </DashboardGrid>
       </DashboardPanel>
 
-      {/* פילטרים */}
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <FilterIcon />
-          <Typography variant="h6">סינון</Typography>
-        </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>סטטוס</InputLabel>
-              <Select value={filters.status} label="סטטוס" onChange={(e) => handleFilterChange('status', e.target.value)}>
-                <MenuItem value="">הכל</MenuItem>
-                <MenuItem value="pending">ממתינות</MenuItem>
-                <MenuItem value="completed">הושלמו</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth size="small">
-              <InputLabel>למי</InputLabel>
-              <Select value={filters.assigned_to} label="למי" onChange={(e) => handleFilterChange('assigned_to', e.target.value)}>
-                <MenuItem value="">הכל</MenuItem>
-                {users.map(user => (
-                  <MenuItem key={user.username} value={user.username}>
-                    {user.username}{user.role ? ` (${user.role})` : ''}
-                  </MenuItem>
+      {/* טבלת משימות */}
+      <Box sx={{ mt: 2 }}>
+        <TableKit
+          data={filteredTasks}
+          columns={columns}
+          clientSideMode={true}
+          urlSync={false}
+          title={title}
+          showColumnPicker={true}
+          showExport={true}
+          showFilters={true}
+          onRowDoubleClick={(row) => onOpenClient ? onOpenClient(row) : handleOpenEdit(row)}
+        />
+      </Box>
+
+      {/* דיאלוג עריכת משימה */}
+      <Dialog open={editDialog.open} onClose={() => setEditDialog({ open: false, task: null })} maxWidth="sm" fullWidth>
+        <DialogTitle>עריכת משימה</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              label="תיאור"
+              value={editForm.description || ''}
+              onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+              fullWidth multiline rows={2}
+            />
+            <FormControl fullWidth>
+              <InputLabel>סוג משימה</InputLabel>
+              <Select
+                value={editForm.task_type || ''}
+                onChange={(e) => setEditForm(prev => ({ ...prev, task_type: e.target.value }))}
+                label="סוג משימה"
+              >
+                {taskTypes.map(t => (
+                  <MenuItem key={t.name} value={t.name}>{t.description || t.name}</MenuItem>
                 ))}
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth size="small" type="date" label="מתאריך" value={filters.due_date_from} onChange={(e) => handleFilterChange('due_date_from', e.target.value)} InputLabelProps={{ shrink: true }} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField fullWidth size="small" type="date" label="עד תאריך" value={filters.due_date_to} onChange={(e) => handleFilterChange('due_date_to', e.target.value)} InputLabelProps={{ shrink: true }} />
-          </Grid>
-        </Grid>
-      </Paper>
-
-      {/* תוכן */}
-      {isLoading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}>
-          <CircularProgress size={60} />
-        </Box>
-      ) : error ? (
-        <Alert severity="error">שגיאה בטעינת משימות</Alert>
-      ) : filteredTasks.length === 0 ? (
-        <Paper sx={{ p: 5, textAlign: 'center', bgcolor: '#f5f5f5' }}>
-          <Typography variant="h6" color="text.secondary">אין משימות להצגה</Typography>
-        </Paper>
-      ) : (
-        <Box>
-          {/* משימות באיחור */}
-          {overdueTasks.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, color: '#e74c3c', fontWeight: 'bold' }}>
-                משימות באיחור ({overdueTasks.length})
-              </Typography>
-              <List>{overdueTasks.map(t => renderTaskItem(t, '#ffe6e6'))}</List>
-            </Box>
-          )}
-
-          {/* משימות להיום */}
-          {todayTasks.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, color: '#9b59b6', fontWeight: 'bold' }}>
-                משימות להיום ({todayTasks.length})
-              </Typography>
-              <List>{todayTasks.map(t => renderTaskItem(t, '#f3e5f5'))}</List>
-            </Box>
-          )}
-
-          {/* משימות עתידיות */}
-          {upcomingTasks.length > 0 && filters.status !== 'completed' && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, color: '#f39c12', fontWeight: 'bold' }}>
-                משימות עתידיות ({upcomingTasks.length})
-              </Typography>
-              <List>{upcomingTasks.map(t => renderTaskItem(t))}</List>
-            </Box>
-          )}
-
-          {/* משימות שהושלמו */}
-          {completedTasks.length > 0 && filters.status === 'completed' && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, color: '#2ecc71', fontWeight: 'bold' }}>
-                משימות שהושלמו ({completedTasks.length})
-              </Typography>
-              <List>{completedTasks.map(t => renderTaskItem(t, '#e8f5e9'))}</List>
-            </Box>
-          )}
-        </Box>
-      )}
+            <FormControl fullWidth>
+              <InputLabel>שיוך לנציג</InputLabel>
+              <Select
+                value={editForm.assigned_to || ''}
+                onChange={(e) => setEditForm(prev => ({ ...prev, assigned_to: e.target.value }))}
+                label="שיוך לנציג"
+              >
+                <MenuItem value="all">כולם</MenuItem>
+                {users.map(u => (
+                  <MenuItem key={u.username} value={u.username}>{u.display_name || u.username}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="תאריך יעד"
+              type="date"
+              value={editForm.due_date || ''}
+              onChange={(e) => setEditForm(prev => ({ ...prev, due_date: e.target.value }))}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+            <FormControl fullWidth>
+              <InputLabel>עדיפות</InputLabel>
+              <Select
+                value={editForm.priority || 'normal'}
+                onChange={(e) => setEditForm(prev => ({ ...prev, priority: e.target.value }))}
+                label="עדיפות"
+              >
+                <MenuItem value="low">נמוכה</MenuItem>
+                <MenuItem value="normal">רגילה</MenuItem>
+                <MenuItem value="high">גבוהה</MenuItem>
+                <MenuItem value="urgent">דחופה</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>סטטוס</InputLabel>
+              <Select
+                value={editForm.status || 'pending'}
+                onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
+                label="סטטוס"
+              >
+                <MenuItem value="pending">ממתין</MenuItem>
+                <MenuItem value="completed">הושלם</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditDialog({ open: false, task: null })}>ביטול</Button>
+          <Button onClick={handleSaveEdit} variant="contained" color="primary">שמור</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* דיאלוג מחיקה */}
       <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, taskId: null })}>
@@ -300,7 +364,7 @@ function TasksDashboard({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialog({ open: false, taskId: null })}>ביטול</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">מחק</Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained">מחק</Button>
         </DialogActions>
       </Dialog>
     </Box>
