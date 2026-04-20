@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Box, IconButton, Tooltip, Typography, CircularProgress } from '@mui/material';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutlined';
 import StopCircleOutlinedIcon from '@mui/icons-material/StopCircleOutlined';
 
 /**

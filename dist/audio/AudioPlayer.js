@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = AudioPlayer;
 var _react = _interopRequireWildcard(require("react"));
 var _material = require("@mui/material");
-var _PlayCircleOutline = _interopRequireDefault(require("@mui/icons-material/PlayCircleOutline"));
+var _PlayCircleOutlined = _interopRequireDefault(require("@mui/icons-material/PlayCircleOutlined"));
 var _StopCircleOutlined = _interopRequireDefault(require("@mui/icons-material/StopCircleOutlined"));
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
@@ -151,7 +151,7 @@ function AudioPlayer(_ref) {
             size: 16
           }) : playing ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_StopCircleOutlined["default"], {
             fontSize: "small"
-          }) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_PlayCircleOutline["default"], {
+          }) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_PlayCircleOutlined["default"], {
             fontSize: "small"
           })
         })

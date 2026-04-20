@@ -11,7 +11,7 @@ var _Mic = _interopRequireDefault(require("@mui/icons-material/Mic"));
 var _Stop = _interopRequireDefault(require("@mui/icons-material/Stop"));
 var _PlayArrow = _interopRequireDefault(require("@mui/icons-material/PlayArrow"));
 var _Pause = _interopRequireDefault(require("@mui/icons-material/Pause"));
-var _DeleteOutline = _interopRequireDefault(require("@mui/icons-material/DeleteOutline"));
+var _DeleteOutlined = _interopRequireDefault(require("@mui/icons-material/DeleteOutlined"));
 var _Save = _interopRequireDefault(require("@mui/icons-material/Save"));
 var _FiberManualRecord = _interopRequireDefault(require("@mui/icons-material/FiberManualRecord"));
 var _jsxRuntime = require("react/jsx-runtime");
@@ -274,7 +274,7 @@ var AudioRecorder = function AudioRecorder(_ref) {
           variant: "outlined",
           size: "small",
           color: "error",
-          startIcon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_DeleteOutline["default"], {}),
+          startIcon: /*#__PURE__*/(0, _jsxRuntime.jsx)(_DeleteOutlined["default"], {}),
           onClick: discardRecording,
           disabled: saving,
           children: "\u05DE\u05D7\u05E7"

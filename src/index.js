@@ -19,6 +19,48 @@ export {
 // ── Layout — סרגל צד + מסגרת ──
 export { CrmLayout } from './layout/index.js';
 
+// ── Sidebar — סרגל צד מתקדם ──
+export {
+  Sidebar,
+  MobileMenuButton,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarFooter,
+  MessagesCenter,
+  SidebarProvider,
+  useSidebar,
+  SIDEBAR_WIDTH_EXPANDED,
+  SIDEBAR_WIDTH_COLLAPSED,
+  COLORS as SIDEBAR_COLORS,
+  SPACING as SIDEBAR_SPACING,
+  RADIUS as SIDEBAR_RADIUS,
+  TYPOGRAPHY as SIDEBAR_TYPOGRAPHY,
+  TRANSITION_DURATION,
+  TRANSITION_EASING,
+} from './sidebar/index.js';
+
+// ── PersonalArea — אזור אישי ──
+export {
+  PersonalAreaLayout,
+  PersonalDetailsForm,
+  PreferencesPanel,
+  ThemeSelector,
+  InterfaceScaleSelector,
+  ProfileImageUploader,
+  AdminGlobalProfileImageSection,
+  SettingsCard,
+  FieldRow,
+  useApplyPreferences,
+  PA_COLORS,
+  PA_SPACING,
+  PA_TYPOGRAPHY,
+  PA_RADIUS,
+  PA_SHADOWS,
+  PA_TRANSITIONS,
+  SITE_THEMES,
+  SITE_SCALES,
+} from './personal-area/index.js';
+
 // ── Theme — שפה עיצובית ──
 export {
   createCrmTheme,
