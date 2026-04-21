@@ -62,6 +62,8 @@ function SidebarInner({
   headerExtra,
   children,
   mobileBreakpoint = 'md',
+  showMobileMenuButton = true,
+  mobileMenuButtonSx,
 }) {
   const { collapsed, toggle, mobileOpen, closeMobile } = useSidebar();
   const theme = useTheme();
@@ -80,28 +82,30 @@ function SidebarInner({
         overflow: 'hidden',
       }}
     >
-      {/* Collapse toggle */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: collapsed ? 'center' : 'flex-start',
-          px: `${SPACING.sm}px`,
-          pt: `${SPACING.sm}px`,
-        }}
-      >
-        <Tooltip title={collapsed ? 'הרחב תפריט' : 'כווץ תפריט'} placement="left" arrow>
-          <IconButton
-            size="small"
-            onClick={toggle}
-            sx={{
-              color: COLORS.textSecondary,
-              '&:hover': { backgroundColor: COLORS.bgHover },
-            }}
-          >
-            {collapsed ? <ChevronLeftRoundedIcon /> : <ChevronRightRoundedIcon />}
-          </IconButton>
-        </Tooltip>
-      </Box>
+      {/* Collapse toggle (desktop only) */}
+      {!isMobile && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            px: `${SPACING.sm}px`,
+            pt: `${SPACING.sm}px`,
+          }}
+        >
+          <Tooltip title={collapsed ? 'הרחב תפריט' : 'כווץ תפריט'} placement="left" arrow>
+            <IconButton
+              size="small"
+              onClick={toggle}
+              sx={{
+                color: COLORS.textSecondary,
+                '&:hover': { backgroundColor: COLORS.bgHover },
+              }}
+            >
+              {collapsed ? <ChevronLeftRoundedIcon /> : <ChevronRightRoundedIcon />}
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
 
       {/* Header */}
       <SidebarHeader
@@ -149,21 +153,42 @@ function SidebarInner({
   // Mobile: temporary drawer
   if (isMobile) {
     return (
-      <Drawer
-        variant="temporary"
-        anchor="right"
-        open={mobileOpen}
-        onClose={closeMobile}
-        ModalProps={{ keepMounted: true }}
-        PaperProps={{
-          sx: {
-            width: SIDEBAR_WIDTH_EXPANDED,
-            direction: 'rtl',
-          },
-        }}
-      >
-        {drawerContent}
-      </Drawer>
+      <>
+        {showMobileMenuButton && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 8,
+              right: 8,
+              zIndex: 1400,
+              backgroundColor: 'rgba(255,255,255,0.92)',
+              borderRadius: `${RADIUS.sm}px`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              ...mobileMenuButtonSx,
+            }}
+          >
+            <MobileMenuButton />
+          </Box>
+        )}
+
+        <Drawer
+          variant="temporary"
+          anchor="right"
+          open={mobileOpen}
+          onClose={closeMobile}
+          ModalProps={{ keepMounted: true }}
+          PaperProps={{
+            sx: {
+              width: SIDEBAR_WIDTH_EXPANDED,
+              direction: 'rtl',
+              right: 0,
+              left: 'auto',
+            },
+          }}
+        >
+          {drawerContent}
+        </Drawer>
+      </>
     );
   }
 
@@ -210,9 +235,9 @@ export default function Sidebar({ defaultCollapsed = false, ...props }) {
  * Place this in your top app bar.
  */
 export function MobileMenuButton() {
-  const { openMobile } = useSidebar();
+  const { toggleMobile } = useSidebar();
   return (
-    <IconButton onClick={openMobile} sx={{ color: COLORS.textPrimary }}>
+    <IconButton onClick={toggleMobile} sx={{ color: COLORS.textPrimary }}>
       <MenuRoundedIcon />
     </IconButton>
   );

@@ -43,6 +43,11 @@ function SidebarProvider(_ref) {
   var closeMobile = (0, _react.useCallback)(function () {
     return setMobileOpen(false);
   }, []);
+  var toggleMobile = (0, _react.useCallback)(function () {
+    return setMobileOpen(function (open) {
+      return !open;
+    });
+  }, []);
   var value = (0, _react.useMemo)(function () {
     return {
       collapsed: collapsed,
@@ -51,9 +56,10 @@ function SidebarProvider(_ref) {
       collapse: collapse,
       mobileOpen: mobileOpen,
       openMobile: openMobile,
-      closeMobile: closeMobile
+      closeMobile: closeMobile,
+      toggleMobile: toggleMobile
     };
-  }, [collapsed, toggle, expand, collapse, mobileOpen, openMobile, closeMobile]);
+  }, [collapsed, toggle, expand, collapse, mobileOpen, openMobile, closeMobile, toggleMobile]);
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(SidebarContext.Provider, {
     value: value,
     children: children

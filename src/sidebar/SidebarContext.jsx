@@ -11,10 +11,11 @@ export function SidebarProvider({ children, defaultCollapsed = false }) {
   const collapse = useCallback(() => setCollapsed(true), []);
   const openMobile = useCallback(() => setMobileOpen(true), []);
   const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const toggleMobile = useCallback(() => setMobileOpen((open) => !open), []);
 
   const value = useMemo(
-    () => ({ collapsed, toggle, expand, collapse, mobileOpen, openMobile, closeMobile }),
-    [collapsed, toggle, expand, collapse, mobileOpen, openMobile, closeMobile],
+    () => ({ collapsed, toggle, expand, collapse, mobileOpen, openMobile, closeMobile, toggleMobile }),
+    [collapsed, toggle, expand, collapse, mobileOpen, openMobile, closeMobile, toggleMobile],
   );
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
