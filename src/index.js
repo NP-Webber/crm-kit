@@ -84,6 +84,8 @@ export {
   AuthProvider,
   useAuth,
   ProtectedRoute,
+  LoginPage,
+  LoginFields,
 } from './auth/index.js';
 
 // ── API — שירותי HTTP ──
