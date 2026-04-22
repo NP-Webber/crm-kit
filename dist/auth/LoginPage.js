@@ -31,6 +31,7 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var LoginFields = exports.LoginFields = function LoginFields(_ref) {
+  var _passwordTextFieldPro;
   var username = _ref.username,
     password = _ref.password,
     onUsernameChange = _ref.onUsernameChange,
@@ -72,12 +73,23 @@ var LoginFields = exports.LoginFields = function LoginFields(_ref) {
       fullWidth: true
     }, passwordTextFieldProps), {}, {
       InputProps: _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 ? void 0 : passwordTextFieldProps.InputProps) || {}), {}, {
+        sx: _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 || (_passwordTextFieldPro = passwordTextFieldProps.InputProps) === null || _passwordTextFieldPro === void 0 ? void 0 : _passwordTextFieldPro.sx) || {}), {}, {
+          '& .MuiInputAdornment-positionEnd': {
+            marginInlineStart: 0,
+            marginInlineEnd: 0,
+            paddingInline: 4,
+            backgroundColor: 'inherit',
+            borderRadius: 'inherit'
+          }
+        }),
         endAdornment: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.InputAdornment, {
           position: "end",
           children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.IconButton, {
             onClick: onToggleShowPassword,
-            edge: "end",
             "aria-label": showPassword ? hidePasswordLabel : showPasswordLabel,
+            sx: {
+              margin: 0
+            },
             children: showPassword ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_VisibilityOff["default"], {}) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_Visibility["default"], {})
           })
         })

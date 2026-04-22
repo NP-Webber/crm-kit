@@ -55,12 +55,24 @@ export const LoginFields = ({
         {...passwordTextFieldProps}
         InputProps={{
           ...(passwordTextFieldProps?.InputProps || {}),
+          sx: {
+            ...(passwordTextFieldProps?.InputProps?.sx || {}),
+            '& .MuiInputAdornment-positionEnd': {
+              marginInlineStart: 0,
+              marginInlineEnd: 0,
+              paddingInline: 4,
+              backgroundColor: 'inherit',
+              borderRadius: 'inherit',
+            },
+          },
           endAdornment: (
             <InputAdornment position="end">
               <IconButton
                 onClick={onToggleShowPassword}
-                edge="end"
                 aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
+                sx={{
+                  margin: 0,
+                }}
               >
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
