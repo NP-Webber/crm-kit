@@ -32,6 +32,49 @@ export const LoginFields = ({
   passwordTextFieldProps,
   stackSx,
 }) => {
+  const baseFieldSx = {
+    direction: 'rtl',
+    '& .MuiInputBase-input': {
+      textAlign: 'right',
+    },
+    '& .MuiInputLabel-root': {
+      right: 28,
+      left: 'auto',
+      transformOrigin: 'top right',
+    },
+    '& legend': {
+      textAlign: 'right',
+    },
+  };
+
+  const usernameSlotProps = {
+    ...(usernameTextFieldProps?.slotProps || {}),
+    inputLabel: {
+      ...(usernameTextFieldProps?.slotProps?.inputLabel || {}),
+      shrink: true,
+      sx: {
+        right: 'unset',
+        left: 'inherit',
+        transformOrigin: 'right',
+        ...usernameTextFieldProps?.slotProps?.inputLabel?.sx,
+      },
+    },
+  };
+
+  const passwordSlotProps = {
+    ...(passwordTextFieldProps?.slotProps || {}),
+    inputLabel: {
+      ...(passwordTextFieldProps?.slotProps?.inputLabel || {}),
+      shrink: true,
+      sx: {
+        right: 'unset',
+        left: 'inherit',
+        transformOrigin: 'right',
+        ...passwordTextFieldProps?.slotProps?.inputLabel?.sx,
+      },
+    },
+  };
+
   return (
     <Stack spacing={2} sx={stackSx}>
       <TextField
@@ -42,6 +85,8 @@ export const LoginFields = ({
         required
         fullWidth
         {...usernameTextFieldProps}
+        sx={[baseFieldSx, usernameTextFieldProps?.sx]}
+        slotProps={usernameSlotProps}
       />
 
       <TextField
@@ -53,26 +98,17 @@ export const LoginFields = ({
         required
         fullWidth
         {...passwordTextFieldProps}
+        sx={[baseFieldSx, passwordTextFieldProps?.sx]}
+        slotProps={passwordSlotProps}
         InputProps={{
           ...(passwordTextFieldProps?.InputProps || {}),
-          sx: {
-            ...(passwordTextFieldProps?.InputProps?.sx || {}),
-            '& .MuiInputAdornment-positionEnd': {
-              marginInlineStart: 0,
-              marginInlineEnd: 0,
-              paddingInline: 4,
-              backgroundColor: 'inherit',
-              borderRadius: 'inherit',
-            },
-          },
-          endAdornment: (
-            <InputAdornment position="end">
+          startAdornment: (
+            <InputAdornment position="start" sx={{ margin: 0 }}>
               <IconButton
                 onClick={onToggleShowPassword}
                 aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
-                sx={{
-                  margin: 0,
-                }}
+                size="small"
+                sx={{ margin: 0, padding: 0.5 }}
               >
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>

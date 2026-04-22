@@ -31,7 +31,7 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var LoginFields = exports.LoginFields = function LoginFields(_ref) {
-  var _passwordTextFieldPro;
+  var _usernameTextFieldPro, _usernameTextFieldPro2, _passwordTextFieldPro, _passwordTextFieldPro2;
   var username = _ref.username,
     password = _ref.password,
     onUsernameChange = _ref.onUsernameChange,
@@ -49,10 +49,44 @@ var LoginFields = exports.LoginFields = function LoginFields(_ref) {
     usernameTextFieldProps = _ref.usernameTextFieldProps,
     passwordTextFieldProps = _ref.passwordTextFieldProps,
     stackSx = _ref.stackSx;
+  var baseFieldSx = {
+    direction: 'rtl',
+    '& .MuiInputBase-input': {
+      textAlign: 'right'
+    },
+    '& .MuiInputLabel-root': {
+      right: 28,
+      left: 'auto',
+      transformOrigin: 'top right'
+    },
+    '& legend': {
+      textAlign: 'right'
+    }
+  };
+  var usernameSlotProps = _objectSpread(_objectSpread({}, (usernameTextFieldProps === null || usernameTextFieldProps === void 0 ? void 0 : usernameTextFieldProps.slotProps) || {}), {}, {
+    inputLabel: _objectSpread(_objectSpread({}, (usernameTextFieldProps === null || usernameTextFieldProps === void 0 || (_usernameTextFieldPro = usernameTextFieldProps.slotProps) === null || _usernameTextFieldPro === void 0 ? void 0 : _usernameTextFieldPro.inputLabel) || {}), {}, {
+      shrink: true,
+      sx: _objectSpread({
+        right: 'unset',
+        left: 'inherit',
+        transformOrigin: 'right'
+      }, usernameTextFieldProps === null || usernameTextFieldProps === void 0 || (_usernameTextFieldPro2 = usernameTextFieldProps.slotProps) === null || _usernameTextFieldPro2 === void 0 || (_usernameTextFieldPro2 = _usernameTextFieldPro2.inputLabel) === null || _usernameTextFieldPro2 === void 0 ? void 0 : _usernameTextFieldPro2.sx)
+    })
+  });
+  var passwordSlotProps = _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 ? void 0 : passwordTextFieldProps.slotProps) || {}), {}, {
+    inputLabel: _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 || (_passwordTextFieldPro = passwordTextFieldProps.slotProps) === null || _passwordTextFieldPro === void 0 ? void 0 : _passwordTextFieldPro.inputLabel) || {}), {}, {
+      shrink: true,
+      sx: _objectSpread({
+        right: 'unset',
+        left: 'inherit',
+        transformOrigin: 'right'
+      }, passwordTextFieldProps === null || passwordTextFieldProps === void 0 || (_passwordTextFieldPro2 = passwordTextFieldProps.slotProps) === null || _passwordTextFieldPro2 === void 0 || (_passwordTextFieldPro2 = _passwordTextFieldPro2.inputLabel) === null || _passwordTextFieldPro2 === void 0 ? void 0 : _passwordTextFieldPro2.sx)
+    })
+  });
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)(_material.Stack, {
     spacing: 2,
     sx: stackSx,
-    children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_material.TextField, _objectSpread({
+    children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_material.TextField, _objectSpread(_objectSpread({
       label: usernameLabel,
       value: username,
       onChange: function onChange(e) {
@@ -61,7 +95,10 @@ var LoginFields = exports.LoginFields = function LoginFields(_ref) {
       autoComplete: "username",
       required: true,
       fullWidth: true
-    }, usernameTextFieldProps)), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.TextField, _objectSpread(_objectSpread({
+    }, usernameTextFieldProps), {}, {
+      sx: [baseFieldSx, usernameTextFieldProps === null || usernameTextFieldProps === void 0 ? void 0 : usernameTextFieldProps.sx],
+      slotProps: usernameSlotProps
+    })), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.TextField, _objectSpread(_objectSpread({
       label: passwordLabel,
       value: password,
       onChange: function onChange(e) {
@@ -72,23 +109,21 @@ var LoginFields = exports.LoginFields = function LoginFields(_ref) {
       required: true,
       fullWidth: true
     }, passwordTextFieldProps), {}, {
+      sx: [baseFieldSx, passwordTextFieldProps === null || passwordTextFieldProps === void 0 ? void 0 : passwordTextFieldProps.sx],
+      slotProps: passwordSlotProps,
       InputProps: _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 ? void 0 : passwordTextFieldProps.InputProps) || {}), {}, {
-        sx: _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 || (_passwordTextFieldPro = passwordTextFieldProps.InputProps) === null || _passwordTextFieldPro === void 0 ? void 0 : _passwordTextFieldPro.sx) || {}), {}, {
-          '& .MuiInputAdornment-positionEnd': {
-            marginInlineStart: 0,
-            marginInlineEnd: 0,
-            paddingInline: 4,
-            backgroundColor: 'inherit',
-            borderRadius: 'inherit'
-          }
-        }),
-        endAdornment: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.InputAdornment, {
-          position: "end",
+        startAdornment: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.InputAdornment, {
+          position: "start",
+          sx: {
+            margin: 0
+          },
           children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.IconButton, {
             onClick: onToggleShowPassword,
             "aria-label": showPassword ? hidePasswordLabel : showPasswordLabel,
+            size: "small",
             sx: {
-              margin: 0
+              margin: 0,
+              padding: 0.5
             },
             children: showPassword ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_VisibilityOff["default"], {}) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_Visibility["default"], {})
           })
