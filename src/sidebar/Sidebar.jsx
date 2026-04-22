@@ -68,6 +68,7 @@ function SidebarInner({
   const { collapsed, toggle, mobileOpen, closeMobile } = useSidebar();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down(mobileBreakpoint));
+  const drawerAnchor = theme.direction === 'rtl' ? 'left' : 'right';
 
   const width = collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED;
 
@@ -173,7 +174,7 @@ function SidebarInner({
 
         <Drawer
           variant="temporary"
-          anchor="right"
+          anchor={drawerAnchor}
           open={mobileOpen}
           onClose={closeMobile}
           ModalProps={{ keepMounted: true }}
@@ -196,7 +197,7 @@ function SidebarInner({
   return (
     <Drawer
       variant="permanent"
-      anchor="right"
+      anchor={drawerAnchor}
       sx={{
         width,
         flexShrink: 0,

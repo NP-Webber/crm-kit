@@ -86,6 +86,7 @@ function SidebarInner(_ref) {
     closeMobile = _useSidebar.closeMobile;
   var theme = (0, _styles.useTheme)();
   var isMobile = (0, _material.useMediaQuery)(theme.breakpoints.down(mobileBreakpoint));
+  var drawerAnchor = theme.direction === 'rtl' ? 'left' : 'right';
   var width = collapsed ? _constants.SIDEBAR_WIDTH_COLLAPSED : _constants.SIDEBAR_WIDTH_EXPANDED;
   var drawerContent = /*#__PURE__*/(0, _jsxRuntime.jsxs)(_material.Box, {
     sx: {
@@ -165,7 +166,7 @@ function SidebarInner(_ref) {
         children: /*#__PURE__*/(0, _jsxRuntime.jsx)(MobileMenuButton, {})
       }), /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Drawer, {
         variant: "temporary",
-        anchor: "right",
+        anchor: drawerAnchor,
         open: mobileOpen,
         onClose: closeMobile,
         ModalProps: {
@@ -187,7 +188,7 @@ function SidebarInner(_ref) {
   // Desktop: permanent drawer
   return /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Drawer, {
     variant: "permanent",
-    anchor: "right",
+    anchor: drawerAnchor,
     sx: {
       width: width,
       flexShrink: 0,
