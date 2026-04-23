@@ -25,15 +25,7 @@ function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbol
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); } // Build a base RTL theme that consumers can extend
-var rtlTheme = (0, _styles.createTheme)({
-  direction: 'rtl',
-  typography: {
-    fontFamily: _constants.TYPOGRAPHY.fontFamily
-  }
-});
-
-/**
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); } /**
  * Sidebar — CRM KIT generic sidebar component.
  *
  * Configuration-driven: pass user, menuItems, messages, and callbacks.
@@ -87,14 +79,20 @@ function SidebarInner(_ref) {
   var theme = (0, _styles.useTheme)();
   var isMobile = (0, _material.useMediaQuery)(theme.breakpoints.down(mobileBreakpoint));
   var width = collapsed ? _constants.SIDEBAR_WIDTH_COLLAPSED : _constants.SIDEBAR_WIDTH_EXPANDED;
+
+  // No ThemeProvider — just set direction:rtl on the Box directly.
+  // Matches the original working approach where the Drawer had NO RTL context,
+  // so anchor="right" slides in correctly from the right.
   var drawerContent = /*#__PURE__*/(0, _jsxRuntime.jsxs)(_material.Box, {
+    dir: "rtl",
     sx: {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
       backgroundColor: _constants.COLORS.bg,
       borderLeft: "1px solid ".concat(_constants.COLORS.border),
-      overflow: 'hidden'
+      overflow: 'hidden',
+      fontFamily: _constants.TYPOGRAPHY.fontFamily
     },
     children: [!isMobile && /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.Box, {
       sx: {
@@ -174,7 +172,6 @@ function SidebarInner(_ref) {
         PaperProps: {
           sx: {
             width: _constants.SIDEBAR_WIDTH_EXPANDED,
-            direction: 'rtl',
             right: 0,
             left: 'auto'
           }
@@ -213,12 +210,9 @@ function Sidebar(_ref2) {
   var _ref2$defaultCollapse = _ref2.defaultCollapsed,
     defaultCollapsed = _ref2$defaultCollapse === void 0 ? false : _ref2$defaultCollapse,
     props = _objectWithoutProperties(_ref2, _excluded);
-  return /*#__PURE__*/(0, _jsxRuntime.jsx)(_styles.ThemeProvider, {
-    theme: rtlTheme,
-    children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_SidebarContext.SidebarProvider, {
-      defaultCollapsed: defaultCollapsed,
-      children: /*#__PURE__*/(0, _jsxRuntime.jsx)(SidebarInner, _objectSpread({}, props))
-    })
+  return /*#__PURE__*/(0, _jsxRuntime.jsx)(_SidebarContext.SidebarProvider, {
+    defaultCollapsed: defaultCollapsed,
+    children: /*#__PURE__*/(0, _jsxRuntime.jsx)(SidebarInner, _objectSpread({}, props))
   });
 }
 

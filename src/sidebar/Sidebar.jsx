@@ -1,5 +1,5 @@
 import { Box, Drawer, IconButton, Tooltip, useMediaQuery } from '@mui/material';
-import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
@@ -18,12 +18,6 @@ import {
   TRANSITION_EASING,
   TYPOGRAPHY,
 } from './constants';
-
-// Build a base RTL theme that consumers can extend
-const rtlTheme = createTheme({
-  direction: 'rtl',
-  typography: { fontFamily: TYPOGRAPHY.fontFamily },
-});
 
 /**
  * Sidebar — CRM KIT generic sidebar component.
@@ -71,8 +65,12 @@ function SidebarInner({
 
   const width = collapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED;
 
+  // No ThemeProvider — just set direction:rtl on the Box directly.
+  // Matches the original working approach where the Drawer had NO RTL context,
+  // so anchor="right" slides in correctly from the right.
   const drawerContent = (
     <Box
+      dir="rtl"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -80,6 +78,7 @@ function SidebarInner({
         backgroundColor: COLORS.bg,
         borderLeft: `1px solid ${COLORS.border}`,
         overflow: 'hidden',
+        fontFamily: TYPOGRAPHY.fontFamily,
       }}
     >
       {/* Collapse toggle (desktop only) */}
@@ -180,7 +179,6 @@ function SidebarInner({
           PaperProps={{
             sx: {
               width: SIDEBAR_WIDTH_EXPANDED,
-              direction: 'rtl',
               right: 0,
               left: 'auto',
             },
@@ -222,11 +220,9 @@ function SidebarInner({
  */
 export default function Sidebar({ defaultCollapsed = false, ...props }) {
   return (
-    <ThemeProvider theme={rtlTheme}>
-      <SidebarProvider defaultCollapsed={defaultCollapsed}>
-        <SidebarInner {...props} />
-      </SidebarProvider>
-    </ThemeProvider>
+    <SidebarProvider defaultCollapsed={defaultCollapsed}>
+      <SidebarInner {...props} />
+    </SidebarProvider>
   );
 }
 
