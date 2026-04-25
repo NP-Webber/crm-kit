@@ -99,7 +99,7 @@ var parseWidth = function parseWidth(w) {
  * @param {Function} props.renderDrawerDetail - רינדור מותאם לחלונית (row) => JSX
  * @param {Function} props.onOpenCard - callback(row) — כפתור "פתח כרטיסיה" בתחתית ה-RowDrawer
  * @param {Function} props.fetchValuesFor - async (colKey) => string[]  — שליפת ערכים ייחודיים מהשרת
- * @param {boolean} props.clientSideMode - עיבוד מקומי (סינון, מיון, דפדוף)
+ * @param {boolean} props.clientSideMode - עיבוד מקומי (סינון, מיון, דפדוף) (ברירת מחדל: true)
  * @param {Function} props.onExportFetch - שליפת כל הנתונים ליצוא (server-side)
  * @param {boolean} props.urlSync - סנכרון state עם URL params (ברירת מחדל: true)
  * @param {Function} props.onStateChange - callback({ page, pageSize, sort, order, filters }) — חלופה ל-URL sync
@@ -139,10 +139,10 @@ var TableKit = function TableKit(_ref) {
     visibleColumnKeys = _ref.visibleColumnKeys,
     onVisibleColumnsChange = _ref.onVisibleColumnsChange,
     _ref$clientSideMode = _ref.clientSideMode,
-    clientSideMode = _ref$clientSideMode === void 0 ? false : _ref$clientSideMode,
+    clientSideMode = _ref$clientSideMode === void 0 ? true : _ref$clientSideMode,
     onExportFetch = _ref.onExportFetch,
     _ref$urlSync = _ref.urlSync,
-    urlSync = _ref$urlSync === void 0 ? true : _ref$urlSync,
+    urlSync = _ref$urlSync === void 0 ? false : _ref$urlSync,
     onStateChange = _ref.onStateChange;
   // URL sync — אופציונלי (נשתמש ב-hook רק אם urlSync=true)
   // אם אין react-router — שומרים state רגיל
@@ -279,22 +279,86 @@ var TableKit = function TableKit(_ref) {
   var getFilterState = (0, _react.useCallback)(function (colKey) {
     return !!(filters[colKey] || valueFilters[colKey] && valueFilters[colKey].length > 0 || pinnedFilters[colKey] && pinnedFilters[colKey].length > 0 || conditionFilters[colKey] && conditionFilters[colKey].operator);
   }, [filters, valueFilters, pinnedFilters, conditionFilters]);
+  var filterTriggerRef = (0, _react.useRef)(null);
+  var popupRef = (0, _react.useRef)(null);
   var handleFilterIconClick = (0, _react.useCallback)(function (colKey, e) {
     e.stopPropagation();
     if (openFilterCol === colKey) {
       setOpenFilterCol(null);
+      filterTriggerRef.current = null;
       return;
     }
-    var rect = e.currentTarget.getBoundingClientRect();
+    // Anchor to the <th> so the popup aligns with the full column width
+    var th = e.currentTarget.closest('th') || e.currentTarget;
+    filterTriggerRef.current = th;
+    var rect = th.getBoundingClientRect();
     setFilterPopupPos({
       top: rect.bottom + 4,
-      right: Math.max(4, window.innerWidth - rect.right - 20)
+      right: Math.max(4, window.innerWidth - rect.right)
     });
     setOpenFilterCol(colKey);
   }, [openFilterCol]);
   var handleFilterPopupClose = (0, _react.useCallback)(function () {
+    // Auto-pin typed text so filter persists after closing the popup
+    if (openFilterCol) {
+      var text = (filters[openFilterCol] || '').trim();
+      if (text) {
+        setPinnedFilters(function (prev) {
+          var existing = prev[openFilterCol] || [];
+          if (existing.includes(text)) return prev;
+          return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, openFilterCol, [].concat(_toConsumableArray(existing), [text])));
+        });
+        setFilters(function (prev) {
+          return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, openFilterCol, ''));
+        });
+        setPage(1);
+      }
+    }
     setOpenFilterCol(null);
-  }, []);
+    filterTriggerRef.current = null;
+  }, [openFilterCol, filters]);
+
+  // Reposition popup on scroll — use RAF + direct DOM update for smooth tracking
+  (0, _react.useEffect)(function () {
+    if (!openFilterCol) return;
+    var rafId = null;
+    var updatePos = function updatePos() {
+      var trigger = filterTriggerRef.current;
+      var popup = popupRef.current;
+      if (!trigger) return;
+      var rect = trigger.getBoundingClientRect();
+      // If the trigger has scrolled completely out of view, close the popup
+      if (rect.bottom < 0 || rect.top > window.innerHeight) {
+        setOpenFilterCol(null);
+        filterTriggerRef.current = null;
+        return;
+      }
+      // Directly update DOM — no React re-render, fully smooth
+      if (popup) {
+        popup.style.top = "".concat(rect.bottom + 4, "px");
+        popup.style.right = "".concat(Math.max(4, window.innerWidth - rect.right), "px");
+      }
+    };
+    var onScroll = function onScroll() {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updatePos);
+    };
+    var container = containerRef.current;
+    container === null || container === void 0 || container.addEventListener('scroll', onScroll, {
+      passive: true
+    });
+    window.addEventListener('scroll', onScroll, {
+      capture: true,
+      passive: true
+    });
+    return function () {
+      container === null || container === void 0 || container.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll, {
+        capture: true
+      });
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [openFilterCol]);
 
   // Drag-to-scroll for horizontal and vertical scrolling
   var containerRef = (0, _react.useRef)(null);
@@ -432,17 +496,11 @@ var TableKit = function TableKit(_ref) {
   }, [clientSideMode, data, globalSearch, columns, filters, pinnedFilters, valueFilters, conditionFilters, sortKey, sortOrder]);
   var filteredData = (0, _react.useMemo)(function () {
     if (clientSideMode) return processedData || [];
-    if (Object.keys(valueFilters).length === 0) return data;
-    return data.filter(function (row) {
-      return Object.entries(valueFilters).every(function (_ref6) {
-        var _ref7 = _slicedToArray(_ref6, 2),
-          key = _ref7[0],
-          vals = _ref7[1];
-        if (!vals || vals.length === 0) return true;
-        return vals.includes(String(row[key]));
-      });
-    });
-  }, [clientSideMode, processedData, data, valueFilters]);
+    // In server-side mode the server is responsible for all filtering.
+    // The client must display exactly what the server returns so that
+    // row count and pagination total stay consistent.
+    return data;
+  }, [clientSideMode, processedData, data]);
   var pagedData = (0, _react.useMemo)(function () {
     if (!clientSideMode) return filteredData;
     var start = (page - 1) * pageSize;
@@ -452,10 +510,10 @@ var TableKit = function TableKit(_ref) {
   var updateUrl = (0, _react.useCallback)(function (newState) {
     if (!setSearchParams) return;
     var params = new URLSearchParams(searchParams);
-    Object.entries(newState).forEach(function (_ref8) {
-      var _ref9 = _slicedToArray(_ref8, 2),
-        k = _ref9[0],
-        v = _ref9[1];
+    Object.entries(newState).forEach(function (_ref6) {
+      var _ref7 = _slicedToArray(_ref6, 2),
+        k = _ref7[0],
+        v = _ref7[1];
       if (v && v !== '' && v !== '1' && k !== 'page') {
         params.set(k, String(v));
       } else if (k === 'page') {
@@ -551,10 +609,10 @@ var TableKit = function TableKit(_ref) {
     var urlState = {
       page: 1
     };
-    Object.entries(newFilters).forEach(function (_ref0) {
-      var _ref1 = _slicedToArray(_ref0, 2),
-        k = _ref1[0],
-        v = _ref1[1];
+    Object.entries(newFilters).forEach(function (_ref8) {
+      var _ref9 = _slicedToArray(_ref8, 2),
+        k = _ref9[0],
+        v = _ref9[1];
       urlState["f_".concat(k)] = v;
     });
     updateUrl(urlState);
@@ -638,7 +696,7 @@ var TableKit = function TableKit(_ref) {
     exporting = _useState28[0],
     setExporting = _useState28[1];
   var handleExport = /*#__PURE__*/function () {
-    var _ref10 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
+    var _ref0 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
       var exportData, activeFilters, allKeys, header, rows, BOM, csvContent, blob, url, link, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
@@ -726,7 +784,7 @@ var TableKit = function TableKit(_ref) {
       }, _callee, null, [[2, 4, 5, 6]]);
     }));
     return function handleExport() {
-      return _ref10.apply(this, arguments);
+      return _ref0.apply(this, arguments);
     };
   }();
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)("div", {
@@ -829,7 +887,7 @@ var TableKit = function TableKit(_ref) {
                 className: "tablekit-filter-cell",
                 children: col.filterable !== false ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_ColumnFilter["default"], {
                   col: col,
-                  data: data,
+                  data: filteredData,
                   textValue: filters[col.key] || '',
                   selectedValues: valueFilters[col.key] || [],
                   onTextChange: handleFilterChange,
@@ -857,6 +915,7 @@ var TableKit = function TableKit(_ref) {
       });
       if (!col || col.filterable === false) return null;
       return /*#__PURE__*/(0, _jsxRuntime.jsx)("div", {
+        ref: popupRef,
         style: {
           position: 'fixed',
           top: filterPopupPos.top,
@@ -871,7 +930,7 @@ var TableKit = function TableKit(_ref) {
         },
         children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_ColumnFilter["default"], {
           col: col,
-          data: data,
+          data: filteredData,
           textValue: filters[col.key] || '',
           selectedValues: valueFilters[col.key] || [],
           onTextChange: handleFilterChange,
@@ -882,6 +941,14 @@ var TableKit = function TableKit(_ref) {
           conditionFilter: conditionFilters[col.key] || null,
           onConditionFilterChange: handleConditionFilterChange,
           defaultOpen: false,
+          autoFocusInput: true,
+          popupStyle: {
+            position: 'relative',
+            top: 'auto',
+            right: 'auto',
+            left: 'auto',
+            marginTop: 4
+          },
           onClose: handleFilterPopupClose
         }, "popup-".concat(openFilterCol))
       }, "popup-wrap-".concat(openFilterCol));

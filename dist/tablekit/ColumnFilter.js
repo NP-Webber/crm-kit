@@ -101,7 +101,9 @@ var ColumnFilter = function ColumnFilter(_ref) {
     _ref$defaultOpen = _ref.defaultOpen,
     defaultOpen = _ref$defaultOpen === void 0 ? false : _ref$defaultOpen,
     onClose = _ref.onClose,
-    popupStyle = _ref.popupStyle;
+    popupStyle = _ref.popupStyle,
+    _ref$autoFocusInput = _ref.autoFocusInput,
+    autoFocusInput = _ref$autoFocusInput === void 0 ? false : _ref$autoFocusInput;
   var _useState = (0, _react.useState)(defaultOpen),
     _useState2 = _slicedToArray(_useState, 2),
     open = _useState2[0],
@@ -345,7 +347,8 @@ var ColumnFilter = function ColumnFilter(_ref) {
         },
         onKeyDown: function onKeyDown(e) {
           if (e.key === 'Enter') pinText();
-        }
+        },
+        autoFocus: autoFocusInput
       }), onPinnedTextsChange && /*#__PURE__*/(0, _jsxRuntime.jsx)("button", {
         className: "tablekit-col-pin-btn".concat(textValue.trim() ? ' ready' : ''),
         type: "button",

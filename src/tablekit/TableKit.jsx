@@ -58,7 +58,7 @@ const parseWidth = (w) => {
  * @param {Function} props.renderDrawerDetail - רינדור מותאם לחלונית (row) => JSX
  * @param {Function} props.onOpenCard - callback(row) — כפתור "פתח כרטיסיה" בתחתית ה-RowDrawer
  * @param {Function} props.fetchValuesFor - async (colKey) => string[]  — שליפת ערכים ייחודיים מהשרת
- * @param {boolean} props.clientSideMode - עיבוד מקומי (סינון, מיון, דפדוף)
+ * @param {boolean} props.clientSideMode - עיבוד מקומי (סינון, מיון, דפדוף) (ברירת מחדל: true)
  * @param {Function} props.onExportFetch - שליפת כל הנתונים ליצוא (server-side)
  * @param {boolean} props.urlSync - סנכרון state עם URL params (ברירת מחדל: true)
  * @param {Function} props.onStateChange - callback({ page, pageSize, sort, order, filters }) — חלופה ל-URL sync
@@ -86,9 +86,9 @@ const TableKit = ({
   allColumnsForPicker,
   visibleColumnKeys,
   onVisibleColumnsChange,
-  clientSideMode = false,
+  clientSideMode = true,
   onExportFetch,
-  urlSync = true,
+  urlSync = false,
   onStateChange,
 }) => {
   // URL sync — אופציונלי (נשתמש ב-hook רק אם urlSync=true)
@@ -177,23 +177,79 @@ const TableKit = ({
       (conditionFilters[colKey] && conditionFilters[colKey].operator));
   }, [filters, valueFilters, pinnedFilters, conditionFilters]);
 
+  const filterTriggerRef = useRef(null);
+  const popupRef = useRef(null);
+
   const handleFilterIconClick = useCallback((colKey, e) => {
     e.stopPropagation();
     if (openFilterCol === colKey) {
       setOpenFilterCol(null);
+      filterTriggerRef.current = null;
       return;
     }
-    const rect = e.currentTarget.getBoundingClientRect();
+    // Anchor to the <th> so the popup aligns with the full column width
+    const th = e.currentTarget.closest('th') || e.currentTarget;
+    filterTriggerRef.current = th;
+    const rect = th.getBoundingClientRect();
     setFilterPopupPos({
       top: rect.bottom + 4,
-      right: Math.max(4, window.innerWidth - rect.right - 20),
+      right: Math.max(4, window.innerWidth - rect.right),
     });
     setOpenFilterCol(colKey);
   }, [openFilterCol]);
 
   const handleFilterPopupClose = useCallback(() => {
+    // Auto-pin typed text so filter persists after closing the popup
+    if (openFilterCol) {
+      const text = (filters[openFilterCol] || '').trim();
+      if (text) {
+        setPinnedFilters(prev => {
+          const existing = prev[openFilterCol] || [];
+          if (existing.includes(text)) return prev;
+          return { ...prev, [openFilterCol]: [...existing, text] };
+        });
+        setFilters(prev => ({ ...prev, [openFilterCol]: '' }));
+        setPage(1);
+      }
+    }
     setOpenFilterCol(null);
-  }, []);
+    filterTriggerRef.current = null;
+  }, [openFilterCol, filters]);
+
+  // Reposition popup on scroll — use RAF + direct DOM update for smooth tracking
+  useEffect(() => {
+    if (!openFilterCol) return;
+    let rafId = null;
+    const updatePos = () => {
+      const trigger = filterTriggerRef.current;
+      const popup = popupRef.current;
+      if (!trigger) return;
+      const rect = trigger.getBoundingClientRect();
+      // If the trigger has scrolled completely out of view, close the popup
+      if (rect.bottom < 0 || rect.top > window.innerHeight) {
+        setOpenFilterCol(null);
+        filterTriggerRef.current = null;
+        return;
+      }
+      // Directly update DOM — no React re-render, fully smooth
+      if (popup) {
+        popup.style.top = `${rect.bottom + 4}px`;
+        popup.style.right = `${Math.max(4, window.innerWidth - rect.right)}px`;
+      }
+    };
+    const onScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updatePos);
+    };
+    const container = containerRef.current;
+    container?.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true });
+    return () => {
+      container?.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll, { capture: true });
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [openFilterCol]);
 
   // Drag-to-scroll for horizontal and vertical scrolling
   const containerRef = useRef(null);
@@ -311,14 +367,11 @@ const TableKit = ({
 
   const filteredData = useMemo(() => {
     if (clientSideMode) return processedData || [];
-    if (Object.keys(valueFilters).length === 0) return data;
-    return data.filter((row) =>
-      Object.entries(valueFilters).every(([key, vals]) => {
-        if (!vals || vals.length === 0) return true;
-        return vals.includes(String(row[key]));
-      })
-    );
-  }, [clientSideMode, processedData, data, valueFilters]);
+    // In server-side mode the server is responsible for all filtering.
+    // The client must display exactly what the server returns so that
+    // row count and pagination total stay consistent.
+    return data;
+  }, [clientSideMode, processedData, data]);
 
   const pagedData = useMemo(() => {
     if (!clientSideMode) return filteredData;
@@ -656,7 +709,7 @@ const TableKit = ({
                     {col.filterable !== false ? (
                       <ColumnFilter
                         col={col}
-                        data={data}
+                        data={filteredData}
                         textValue={filters[col.key] || ''}
                         selectedValues={valueFilters[col.key] || []}
                         onTextChange={handleFilterChange}
@@ -691,6 +744,7 @@ const TableKit = ({
         return (
           <div
             key={`popup-wrap-${openFilterCol}`}
+            ref={popupRef}
             style={{
               position: 'fixed',
               top: filterPopupPos.top,
@@ -707,7 +761,7 @@ const TableKit = ({
             <ColumnFilter
               key={`popup-${openFilterCol}`}
               col={col}
-              data={data}
+              data={filteredData}
               textValue={filters[col.key] || ''}
               selectedValues={valueFilters[col.key] || []}
               onTextChange={handleFilterChange}
@@ -718,6 +772,8 @@ const TableKit = ({
               conditionFilter={conditionFilters[col.key] || null}
               onConditionFilterChange={handleConditionFilterChange}
               defaultOpen={false}
+              autoFocusInput={true}
+              popupStyle={{ position: 'relative', top: 'auto', right: 'auto', left: 'auto', marginTop: 4 }}
               onClose={handleFilterPopupClose}
             />
           </div>

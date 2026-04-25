@@ -31,6 +31,7 @@ const ColumnFilter = ({
   defaultOpen = false,
   onClose,
   popupStyle,
+  autoFocusInput = false,
 }) => {
   const [open, setOpen] = useState(defaultOpen);
   const [search, setSearch] = useState('');
@@ -187,6 +188,7 @@ const ColumnFilter = ({
           value={textValue}
           onChange={(e) => onTextChange(col.key, e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') pinText(); }}
+          autoFocus={autoFocusInput}
         />
         {onPinnedTextsChange && (
           <button
