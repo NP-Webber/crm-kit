@@ -7,6 +7,9 @@ export { default as InterfaceScaleSelector } from './InterfaceScaleSelector';
 export { default as ProfileImageUploader } from './ProfileImageUploader';
 export { default as AdminGlobalProfileImageSection } from './AdminGlobalProfileImageSection';
 export { default as SettingsCard } from './SettingsCard';
+export { default as SettingsDeck } from './SettingsDeck';
+export { default as SettingsDeckItem } from './SettingsDeckItem';
+export { default as SettingsButton } from './SettingsButton';
 export { default as FieldRow } from './FieldRow';
 export { default as useApplyPreferences } from './useApplyPreferences';
 export {
