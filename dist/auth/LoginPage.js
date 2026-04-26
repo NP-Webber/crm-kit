@@ -31,7 +31,7 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var LoginFields = exports.LoginFields = function LoginFields(_ref) {
-  var _usernameTextFieldPro, _usernameTextFieldPro2, _passwordTextFieldPro, _passwordTextFieldPro2;
+  var _usernameTextFieldPro, _usernameTextFieldPro2, _passwordTextFieldPro, _passwordTextFieldPro2, _passwordTextFieldPro3;
   var username = _ref.username,
     password = _ref.password,
     onUsernameChange = _ref.onUsernameChange,
@@ -81,6 +81,24 @@ var LoginFields = exports.LoginFields = function LoginFields(_ref) {
         left: 'inherit',
         transformOrigin: 'right'
       }, passwordTextFieldProps === null || passwordTextFieldProps === void 0 || (_passwordTextFieldPro2 = passwordTextFieldProps.slotProps) === null || _passwordTextFieldPro2 === void 0 || (_passwordTextFieldPro2 = _passwordTextFieldPro2.inputLabel) === null || _passwordTextFieldPro2 === void 0 ? void 0 : _passwordTextFieldPro2.sx)
+    }),
+    input: _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 || (_passwordTextFieldPro3 = passwordTextFieldProps.slotProps) === null || _passwordTextFieldPro3 === void 0 ? void 0 : _passwordTextFieldPro3.input) || {}), {}, {
+      startAdornment: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.InputAdornment, {
+        position: "start",
+        sx: {
+          margin: 0
+        },
+        children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.IconButton, {
+          onClick: onToggleShowPassword,
+          "aria-label": showPassword ? hidePasswordLabel : showPasswordLabel,
+          size: "small",
+          sx: {
+            margin: 0,
+            padding: 0.5
+          },
+          children: showPassword ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_VisibilityOff["default"], {}) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_Visibility["default"], {})
+        })
+      })
     })
   });
   return /*#__PURE__*/(0, _jsxRuntime.jsxs)(_material.Stack, {
@@ -110,25 +128,7 @@ var LoginFields = exports.LoginFields = function LoginFields(_ref) {
       fullWidth: true
     }, passwordTextFieldProps), {}, {
       sx: [baseFieldSx, passwordTextFieldProps === null || passwordTextFieldProps === void 0 ? void 0 : passwordTextFieldProps.sx],
-      slotProps: passwordSlotProps,
-      InputProps: _objectSpread(_objectSpread({}, (passwordTextFieldProps === null || passwordTextFieldProps === void 0 ? void 0 : passwordTextFieldProps.InputProps) || {}), {}, {
-        startAdornment: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.InputAdornment, {
-          position: "start",
-          sx: {
-            margin: 0
-          },
-          children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_material.IconButton, {
-            onClick: onToggleShowPassword,
-            "aria-label": showPassword ? hidePasswordLabel : showPasswordLabel,
-            size: "small",
-            sx: {
-              margin: 0,
-              padding: 0.5
-            },
-            children: showPassword ? /*#__PURE__*/(0, _jsxRuntime.jsx)(_VisibilityOff["default"], {}) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_Visibility["default"], {})
-          })
-        })
-      })
+      slotProps: passwordSlotProps
     }))]
   });
 };

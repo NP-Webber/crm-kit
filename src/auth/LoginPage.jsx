@@ -73,6 +73,21 @@ export const LoginFields = ({
         ...passwordTextFieldProps?.slotProps?.inputLabel?.sx,
       },
     },
+    input: {
+      ...(passwordTextFieldProps?.slotProps?.input || {}),
+      startAdornment: (
+        <InputAdornment position="start" sx={{ margin: 0 }}>
+          <IconButton
+            onClick={onToggleShowPassword}
+            aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
+            size="small"
+            sx={{ margin: 0, padding: 0.5 }}
+          >
+            {showPassword ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    },
   };
 
   return (
@@ -100,21 +115,6 @@ export const LoginFields = ({
         {...passwordTextFieldProps}
         sx={[baseFieldSx, passwordTextFieldProps?.sx]}
         slotProps={passwordSlotProps}
-        InputProps={{
-          ...(passwordTextFieldProps?.InputProps || {}),
-          startAdornment: (
-            <InputAdornment position="start" sx={{ margin: 0 }}>
-              <IconButton
-                onClick={onToggleShowPassword}
-                aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
-                size="small"
-                sx={{ margin: 0, padding: 0.5 }}
-              >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
       />
     </Stack>
   );
