@@ -44,6 +44,10 @@ const ColumnFilter = ({
   const [condVal, setCondVal] = useState('');
   const [condVal2, setCondVal2] = useState('');
   const ref = useRef(null);
+  // Snapshot of data captured when the dropdown opens — frozen during selection
+  const dataSnapshotRef = useRef(data);
+  // Snapshot of data captured when the dropdown opens — frozen during selection
+  const dataSnapshotRef = useRef(data);
 
   useEffect(() => {
     setCondOp(conditionFilter?.operator || '');
@@ -80,9 +84,12 @@ const ColumnFilter = ({
     }
   };
 
-  // Load values on initial open if defaultOpen
+  // Load values on initial open if defaultOpen; also snapshot data
   useEffect(() => {
-    if (defaultOpen && tab === 'values') loadValues();
+    if (defaultOpen) {
+      dataSnapshotRef.current = data;
+      if (tab === 'values') loadValues();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -91,6 +98,8 @@ const ColumnFilter = ({
     setOpen(next);
     if (!next && onClose) onClose();
     if (next && ref.current) {
+      // Snapshot current data so the list stays stable during selection
+      dataSnapshotRef.current = data;
       const rect = ref.current.getBoundingClientRect();
       setDropdownPos({
         top: rect.bottom + 2,
@@ -108,12 +117,14 @@ const ColumnFilter = ({
   const allValues = useMemo(() => {
     if (serverValues !== null) return serverValues;
     const seen = new Set();
-    data.forEach((row) => {
+    // Use snapshot (frozen at open-time) so selections don't shrink the list
+    const source = open ? dataSnapshotRef.current : data;
+    source.forEach((row) => {
       const v = row[col.key];
       if (v !== null && v !== undefined && v !== '') seen.add(String(v));
     });
     return [...seen].sort();
-  }, [serverValues, data, col.key]);
+  }, [serverValues, data, open, col.key]);
 
   const filtered = search
     ? allValues.filter((v) => v.toLowerCase().includes(search.toLowerCase()))
