@@ -148,6 +148,8 @@ var ColumnFilter = function ColumnFilter(_ref) {
     condVal2 = _useState18[0],
     setCondVal2 = _useState18[1];
   var ref = (0, _react.useRef)(null);
+  // Snapshot of data captured when the dropdown opens — frozen during selection
+  var dataSnapshotRef = (0, _react.useRef)(data);
   (0, _react.useEffect)(function () {
     setCondOp((conditionFilter === null || conditionFilter === void 0 ? void 0 : conditionFilter.operator) || '');
     setCondVal((conditionFilter === null || conditionFilter === void 0 ? void 0 : conditionFilter.value) || '');
@@ -205,9 +207,12 @@ var ColumnFilter = function ColumnFilter(_ref) {
     };
   }();
 
-  // Load values on initial open if defaultOpen
+  // Load values on initial open if defaultOpen; also snapshot data
   (0, _react.useEffect)(function () {
-    if (defaultOpen && tab === 'values') loadValues();
+    if (defaultOpen) {
+      dataSnapshotRef.current = data;
+      if (tab === 'values') loadValues();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   var handleOpen = /*#__PURE__*/function () {
@@ -220,6 +225,8 @@ var ColumnFilter = function ColumnFilter(_ref) {
             setOpen(next);
             if (!next && onClose) onClose();
             if (next && ref.current) {
+              // Snapshot current data so the list stays stable during selection
+              dataSnapshotRef.current = data;
               rect = ref.current.getBoundingClientRect();
               setDropdownPos({
                 top: rect.bottom + 2,
@@ -265,12 +272,14 @@ var ColumnFilter = function ColumnFilter(_ref) {
   var allValues = (0, _react.useMemo)(function () {
     if (serverValues !== null) return serverValues;
     var seen = new Set();
-    data.forEach(function (row) {
+    // Use snapshot (frozen at open-time) so selections don't shrink the list
+    var source = open ? dataSnapshotRef.current : data;
+    source.forEach(function (row) {
       var v = row[col.key];
       if (v !== null && v !== undefined && v !== '') seen.add(String(v));
     });
     return _toConsumableArray(seen).sort();
-  }, [serverValues, data, col.key]);
+  }, [serverValues, data, open, col.key]);
   var filtered = search ? allValues.filter(function (v) {
     return v.toLowerCase().includes(search.toLowerCase());
   }) : allValues;

@@ -46,8 +46,6 @@ const ColumnFilter = ({
   const ref = useRef(null);
   // Snapshot of data captured when the dropdown opens — frozen during selection
   const dataSnapshotRef = useRef(data);
-  // Snapshot of data captured when the dropdown opens — frozen during selection
-  const dataSnapshotRef = useRef(data);
 
   useEffect(() => {
     setCondOp(conditionFilter?.operator || '');
