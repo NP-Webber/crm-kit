@@ -7,7 +7,7 @@
 import React, { useId, useState, useCallback, useMemo } from 'react';
 import { Box, Collapse, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import {
   PA_COLORS,
   PA_RADIUS,

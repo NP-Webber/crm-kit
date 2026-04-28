@@ -8,7 +8,7 @@ exports["default"] = SettingsDeckItem;
 var _react = _interopRequireWildcard(require("react"));
 var _material = require("@mui/material");
 var _ExpandMore = _interopRequireDefault(require("@mui/icons-material/ExpandMore"));
-var _ErrorOutline = _interopRequireDefault(require("@mui/icons-material/ErrorOutline"));
+var _ErrorOutlined = _interopRequireDefault(require("@mui/icons-material/ErrorOutlined"));
 var _constants = require("./constants");
 var _jsxRuntime = require("react/jsx-runtime");
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
@@ -197,7 +197,7 @@ function SettingsDeckItem(_ref) {
           }, _constants.PA_TYPOGRAPHY.caption), {}, {
             fontFamily: _constants.PA_TYPOGRAPHY.fontFamily
           }),
-          children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_ErrorOutline["default"], {
+          children: [/*#__PURE__*/(0, _jsxRuntime.jsx)(_ErrorOutlined["default"], {
             sx: {
               fontSize: 14
             }
